@@ -11,6 +11,7 @@
 
 #include "Public/AgentFSM.h"
 #include "Public/SteeringBehaviors.h"
+#include "Public/AgentMemory.h"
 
 #include "StudentPerceptor.generated.h"
 
@@ -33,8 +34,10 @@ private:
 	Seek SeekBehavior;
 	Flee FleeBehavior;
 
-	FVector LastSeenZombieLocation;
-	bool bZombieInSight = false;
+	AgentMemory Memory;
+
+	/*FVector LastSeenZombieLocation;
+	bool bZombieInSight = false;*/
 
 	void DrawVisionCone(ASurvivorPawn* Pawn);
 };

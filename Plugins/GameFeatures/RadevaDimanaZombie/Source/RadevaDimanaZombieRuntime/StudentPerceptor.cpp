@@ -21,21 +21,17 @@ void UStudentPerceptor::BeginPlay()
 
 void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
-	/*GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Green, 
-	FString::Printf(TEXT("Saw Something!")));*/
+	float CurrentTime = GetWorld()->GetTimeSeconds();
 
 	if (Cast<ABaseZombie>(Actor))
 	{
-		GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Green, FString::Printf(TEXT("Saw a zombie!")));
+		FString Msg = FString::Printf(TEXT("Zombie sensed at: %s"), *Stimulus.StimulusLocation.ToString());
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, Msg);
 
+		GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Green, FString::Printf(TEXT("Saw a zombie!")));
 		if (Stimulus.WasSuccessfullySensed())
 		{
-			LastSeenZombieLocation = Stimulus.StimulusLocation;
-			bZombieInSight = true;
-		}
-		else
-		{
-			bZombieInSight = false;
+			Memory.RegisterZombie(Actor, Stimulus.StimulusLocation, CurrentTime);
 		}
 	}
 }
@@ -54,16 +50,16 @@ void UStudentPerceptor::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	DrawVisionCone(Pawn);
 
 	//GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Green, TEXT("Moving!"));
-	FVector RandomPos = FVector(1000.f, 0.f, 0.f);
+	//FVector RandomPos = FVector(1000.f, 0.f, 0.f);
 
 	/*FVector Direction = SeekBehavior.CalculateSteering(Pawn, RandomPos);
 	Pawn->AddMovementInput(Direction, 1.f);*/
 
-	if (bZombieInSight)
-	{
-		FVector Direction = FleeBehavior.CalculateSteering(Pawn, LastSeenZombieLocation);
-		Pawn->AddMovementInput(Direction, 1.f);
-	}
+	//if (bZombieInSight)
+	//{
+	//	FVector Direction = FleeBehavior.CalculateSteering(Pawn, LastSeenZombieLocation);
+	//	Pawn->AddMovementInput(Direction, 1.f);
+	//}
 }
 
 void UStudentPerceptor::DrawVisionCone(ASurvivorPawn* Pawn)
