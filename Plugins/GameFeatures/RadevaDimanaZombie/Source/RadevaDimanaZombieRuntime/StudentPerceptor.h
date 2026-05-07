@@ -10,6 +10,7 @@
 #include "Perception/AISense_Damage.h"
 
 #include "Public/AgentFSM.h"
+#include "Public/SteeringBehaviors.h"
 
 #include "StudentPerceptor.generated.h"
 
@@ -27,4 +28,13 @@ public:
 	virtual void OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+private:
+	Seek SeekBehavior;
+	Flee FleeBehavior;
+
+	FVector LastSeenZombieLocation;
+	bool bZombieInSight = false;
+
+	void DrawVisionCone(ASurvivorPawn* Pawn);
 };

@@ -27,6 +27,16 @@ void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 	if (Cast<ABaseZombie>(Actor))
 	{
 		GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Green, FString::Printf(TEXT("Saw a zombie!")));
+
+		if (Stimulus.WasSuccessfullySensed())
+		{
+			LastSeenZombieLocation = Stimulus.StimulusLocation;
+			bZombieInSight = true;
+		}
+		else
+		{
+			bZombieInSight = false;
+		}
 	}
 }
 
@@ -41,7 +51,45 @@ void UStudentPerceptor::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 		return;
 	}
 
-	GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Green, TEXT("Moving!"));
-	FVector Direction = Pawn->GetActorForwardVector();
-	Pawn->AddMovementInput(Direction, 1.f);
+	DrawVisionCone(Pawn);
+
+	//GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Green, TEXT("Moving!"));
+	FVector RandomPos = FVector(1000.f, 0.f, 0.f);
+
+	/*FVector Direction = SeekBehavior.CalculateSteering(Pawn, RandomPos);
+	Pawn->AddMovementInput(Direction, 1.f);*/
+
+	if (bZombieInSight)
+	{
+		FVector Direction = FleeBehavior.CalculateSteering(Pawn, LastSeenZombieLocation);
+		Pawn->AddMovementInput(Direction, 1.f);
+	}
+}
+
+void UStudentPerceptor::DrawVisionCone(ASurvivorPawn* Pawn)
+{
+	UAIPerceptionComponent* PerceptionComp = Pawn->GetComponentByClass<UAIPerceptionComponent>();
+	if (!PerceptionComp)
+	{
+		return;
+	}
+
+	UAISenseConfig_Sight* SightConfig = Cast<UAISenseConfig_Sight>(PerceptionComp->GetSenseConfig(UAISense::GetSenseID<UAISense_Sight>()));
+	if (!SightConfig)
+	{
+		return;
+	}
+
+	float SightRadius = SightConfig->SightRadius;
+	float HalfAngle = SightConfig->PeripheralVisionAngleDegrees;
+
+	FVector PawnLocation = Pawn->GetActorLocation();
+	FVector ForwardVector = Pawn->GetActorForwardVector();
+
+	FVector LeftDirection = ForwardVector.RotateAngleAxis(-HalfAngle, FVector::UpVector);
+	FVector RightDirection = ForwardVector.RotateAngleAxis(HalfAngle, FVector::UpVector);
+
+	DrawDebugLine(Pawn->GetWorld(), PawnLocation, PawnLocation + LeftDirection * SightRadius, FColor::Yellow, false, -1.f, 0, 2.f);
+	DrawDebugLine(Pawn->GetWorld(), PawnLocation, PawnLocation + RightDirection * SightRadius, FColor::Yellow, false, -1.f, 0, 2.f);
+	DrawDebugLine(Pawn->GetWorld(), PawnLocation, PawnLocation + ForwardVector * SightRadius, FColor::Yellow, false, -1.f, 0, 2.f);
 }
