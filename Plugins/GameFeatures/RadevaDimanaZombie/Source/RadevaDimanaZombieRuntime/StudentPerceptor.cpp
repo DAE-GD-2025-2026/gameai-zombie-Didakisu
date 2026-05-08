@@ -49,17 +49,8 @@ void UStudentPerceptor::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 	DrawVisionCone(Pawn);
 
-	//GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Green, TEXT("Moving!"));
-	//FVector RandomPos = FVector(1000.f, 0.f, 0.f);
-
-	/*FVector Direction = SeekBehavior.CalculateSteering(Pawn, RandomPos);
-	Pawn->AddMovementInput(Direction, 1.f);*/
-
-	//if (bZombieInSight)
-	//{
-	//	FVector Direction = FleeBehavior.CalculateSteering(Pawn, LastSeenZombieLocation);
-	//	Pawn->AddMovementInput(Direction, 1.f);
-	//}
+	FVector Direction = WanderBehavior.CalculateSteering(Pawn, DeltaTime);
+	Pawn->AddMovementInput(Direction, 1.f);
 }
 
 void UStudentPerceptor::DrawVisionCone(ASurvivorPawn* Pawn)

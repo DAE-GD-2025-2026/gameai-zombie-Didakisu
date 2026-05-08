@@ -33,11 +33,9 @@ public:
 private:
 	Seek SeekBehavior;
 	Flee FleeBehavior;
+	Wander WanderBehavior;
 
 	AgentMemory Memory;
-
-	/*FVector LastSeenZombieLocation;
-	bool bZombieInSight = false;*/
 
 	void DrawVisionCone(ASurvivorPawn* Pawn);
 };
