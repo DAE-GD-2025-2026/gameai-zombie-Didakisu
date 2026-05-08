@@ -6,7 +6,6 @@
 
 class ASurvivorPawn;
 
-
 class AgentController
 {
 public:

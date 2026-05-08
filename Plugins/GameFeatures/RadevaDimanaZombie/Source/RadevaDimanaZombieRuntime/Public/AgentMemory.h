@@ -22,6 +22,8 @@ public:
 	const TArray<FPerceivedTarget>& GetZombies() const;
 	const TArray<FPerceivedTarget>& GetItems() const;
 	const TArray<FPerceivedTarget>& GetHouses() const;
+
+	FVector GetClosestZombieLocation(const FVector& FromLocation) const;
 private:
 	TArray<FPerceivedTarget> Zombies;
 	TArray<FPerceivedTarget> Items;

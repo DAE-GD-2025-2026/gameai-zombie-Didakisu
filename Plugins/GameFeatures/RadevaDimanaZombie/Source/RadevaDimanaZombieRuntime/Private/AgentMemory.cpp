@@ -55,3 +55,27 @@ const TArray<FPerceivedTarget>& AgentMemory::GetHouses() const
 {
 	return Houses;
 }
+
+FVector AgentMemory::GetClosestZombieLocation(const FVector& FromLocation) const
+{
+	if (Zombies.Num() == 0)
+	{
+		return FVector::ZeroVector;
+	}
+
+	int ClosestZombieIndex = 0;
+	float ClosestDistanceSquared = FVector::DistSquared(Zombies[0].Location, FromLocation);
+
+	for (int i = 1; i < Zombies.Num(); i++)
+	{
+		float CurrentDistanceSquared = FVector::DistSquared(Zombies[i].Location, FromLocation);
+
+		if (CurrentDistanceSquared < ClosestDistanceSquared)
+		{
+			ClosestDistanceSquared = CurrentDistanceSquared;
+			ClosestZombieIndex = i;
+		}
+	}
+
+	return Zombies[ClosestZombieIndex].Location;
+}
