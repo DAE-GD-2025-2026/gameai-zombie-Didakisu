@@ -35,7 +35,7 @@ private:
 	Flee FleeBehavior;
 	Wander WanderBehavior;
 
-	AgentMemory Memory;
+	//AgentMemory Memory;
 
 	void DrawVisionCone(ASurvivorPawn* Pawn);
 };

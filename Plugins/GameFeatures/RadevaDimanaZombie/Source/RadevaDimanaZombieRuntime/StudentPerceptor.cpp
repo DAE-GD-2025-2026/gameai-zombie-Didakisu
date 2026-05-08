@@ -29,10 +29,10 @@ void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, Msg);
 
 		GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Green, FString::Printf(TEXT("Saw a zombie!")));
-		if (Stimulus.WasSuccessfullySensed())
+		/*if (Stimulus.WasSuccessfullySensed())
 		{
 			Memory.RegisterZombie(Actor, Stimulus.StimulusLocation, CurrentTime);
-		}
+		}*/
 	}
 }
 
