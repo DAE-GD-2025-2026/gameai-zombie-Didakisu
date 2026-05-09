@@ -41,6 +41,23 @@ void AgentMemory::RegisterHouse(AActor * Actor, FVector Location)
 
 }
 
+void AgentMemory::UnregisterZombie(AActor* Actor)
+{
+	if (!Actor)
+	{
+		return;
+	}
+
+	for (int i = Zombies.Num() - 1; i >= 0; i--)
+	{
+		if (Zombies[i].Actor == Actor)
+		{
+			Zombies.RemoveAt(i);
+			return;
+		}
+	}
+}
+
 const TArray<FPerceivedTarget>& AgentMemory::GetZombies() const
 {
 	return Zombies;

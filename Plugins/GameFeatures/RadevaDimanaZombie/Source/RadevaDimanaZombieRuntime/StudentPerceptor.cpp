@@ -13,6 +13,9 @@ void UStudentPerceptor::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	ASurvivorPawn* Pawn = Cast<ASurvivorPawn>(GetOwner());
+	AgentController.Initialize(Pawn);
+
 	if (auto PerceptionComp = GetOwner()->GetComponentByClass<UAIPerceptionComponent>())
 	{
 		PerceptionComp->OnTargetPerceptionUpdated.AddDynamic(this, &UStudentPerceptor::OnPerceptionUpdated);
@@ -29,10 +32,14 @@ void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, Msg);
 
 		GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Green, FString::Printf(TEXT("Saw a zombie!")));
-		/*if (Stimulus.WasSuccessfullySensed())
+		if (Stimulus.WasSuccessfullySensed())
 		{
-			Memory.RegisterZombie(Actor, Stimulus.StimulusLocation, CurrentTime);
-		}*/
+			AgentController.GetMemory().RegisterZombie(Actor, Stimulus.StimulusLocation, CurrentTime);
+		}
+		else
+		{
+			AgentController.GetMemory().UnregisterZombie(Actor);
+		}
 	}
 }
 
@@ -48,9 +55,10 @@ void UStudentPerceptor::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	}
 
 	DrawVisionCone(Pawn);
+	AgentController.Update(DeltaTime);
 
-	FVector Direction = WanderBehavior.CalculateSteering(Pawn, DeltaTime);
-	Pawn->AddMovementInput(Direction, 1.f);
+	/*FVector Direction = WanderBehavior.CalculateSteering(Pawn, DeltaTime);
+	Pawn->AddMovementInput(Direction, 1.f);*/
 }
 
 void UStudentPerceptor::DrawVisionCone(ASurvivorPawn* Pawn)

@@ -11,7 +11,8 @@
 
 #include "Public/AgentFSM.h"
 #include "Public/SteeringBehaviors.h"
-#include "Public/AgentMemory.h"
+//#include "Public/AgentMemory.h"
+#include "Public/AgentController.h"
 
 #include "StudentPerceptor.generated.h"
 
@@ -35,6 +36,7 @@ private:
 	Flee FleeBehavior;
 	Wander WanderBehavior;
 
+	AgentController AgentController;
 	//AgentMemory Memory;
 
 	void DrawVisionCone(ASurvivorPawn* Pawn);

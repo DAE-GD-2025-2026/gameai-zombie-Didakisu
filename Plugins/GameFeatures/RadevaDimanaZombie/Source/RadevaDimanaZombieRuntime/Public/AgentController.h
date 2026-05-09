@@ -4,6 +4,9 @@
 #include "AgentMemory.h"
 #include "AgentFSM.h"
 
+#include "States/FleeState.h"
+#include "States/WanderState.h"
+
 class ASurvivorPawn;
 
 class AgentController
@@ -21,4 +24,7 @@ private:
 
 	AgentMemory Memory;
 	FSM StateMachine;
+
+	FleeState* Flee;
+	WanderState* Wander;
 };

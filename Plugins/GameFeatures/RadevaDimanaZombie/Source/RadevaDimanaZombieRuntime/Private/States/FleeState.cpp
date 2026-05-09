@@ -8,6 +8,22 @@ FleeState::FleeState(ASurvivorPawn* InPawn, AgentMemory* InMemory)
 	Memory = InMemory;
 }
 
+void FleeState::OnEnter()
+{
+	if (Pawn)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("Entering Flee State"));
+	}
+}
+
+void FleeState::OnExit()
+{
+	if (Pawn)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Exiting Flee State"));
+	}
+}
+
 void FleeState::Update(float DeltaTime)
 {
 	if (!Pawn || !Memory)
@@ -17,7 +33,7 @@ void FleeState::Update(float DeltaTime)
 
 	FVector ThreatLocation = Memory->GetClosestZombieLocation(Pawn->GetActorLocation());
 
-	FVector Direction = FleeBehavior->CalculateSteering(Pawn, ThreatLocation);
+	FVector Direction = FleeBehavior.CalculateSteering(Pawn, ThreatLocation);
 	Direction.Z = 0.f;
 	Direction = Direction.GetSafeNormal();
 

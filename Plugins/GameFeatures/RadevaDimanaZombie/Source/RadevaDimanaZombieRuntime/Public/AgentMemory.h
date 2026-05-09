@@ -19,6 +19,8 @@ public:
 	void RegisterItem(AActor* Actor, FVector Location);
 	void RegisterHouse(AActor* Actor, FVector Location);
 
+	void UnregisterZombie(AActor* Actor);
+
 	const TArray<FPerceivedTarget>& GetZombies() const;
 	const TArray<FPerceivedTarget>& GetItems() const;
 	const TArray<FPerceivedTarget>& GetHouses() const;
