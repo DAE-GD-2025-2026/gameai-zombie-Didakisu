@@ -6,6 +6,7 @@
 
 #include "States/FleeState.h"
 #include "States/WanderState.h"
+#include "States/CollectState.h"
 
 class ASurvivorPawn;
 
@@ -27,4 +28,5 @@ private:
 
 	FleeState* Flee;
 	WanderState* Wander;
+	CollectState* Collect;
 };

@@ -1,0 +1,56 @@
+#include "States/CollectState.h"
+#include "Survivor/SurvivorPawn.h"
+#include "Common/InventoryComponent.h"
+
+CollectState::CollectState(ASurvivorPawn* InPawn, AgentMemory* InMemory)
+{
+	Pawn = InPawn;
+	Memory = InMemory;
+}
+
+void CollectState::OnEnter()
+{
+	TargetItem = Memory->GetClosestItem(Pawn->GetActorLocation());
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, TEXT("Entering Collect State"));
+}
+
+void CollectState::OnExit()
+{
+	TargetItem = nullptr;
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Magenta, TEXT("Exiting Collect State"));
+}
+
+void CollectState::Update(float DeltaTime)
+{
+	if (!TargetItem && Memory->GetItems().Num() > 0)
+	{
+		TargetItem = Memory->GetClosestItem(Pawn->GetActorLocation());
+	}
+
+	if (!Pawn || !TargetItem)
+	{
+		return;
+	}
+
+	FVector Direction = SeekBehavior.CalculateSteering(Pawn, TargetItem->GetActorLocation());
+	Pawn->AddMovementInput(Direction, 0.3f);
+
+	//pick up
+	float Distance = FVector::Dist(Pawn->GetActorLocation(), TargetItem->GetActorLocation());
+	if (Distance < 100.f)
+	{
+		UInventoryComponent* Inventory = Pawn->GetComponentByClass<UInventoryComponent>();
+		if (Inventory)
+		{
+			for (int i = 0; i < 5; i++)
+			{
+				if (Inventory->GrabItem(i, TargetItem))
+				{
+					Memory->UnregisterItem(TargetItem);
+					TargetItem = nullptr;
+					break;
+				}
+			}
+		}
+	}
+}

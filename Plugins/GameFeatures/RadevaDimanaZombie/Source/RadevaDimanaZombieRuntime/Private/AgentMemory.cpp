@@ -33,7 +33,26 @@ void AgentMemory::RegisterZombie(AActor* Actor, FVector Location, float CurrentT
 
 void AgentMemory::RegisterItem(AActor * Actor, FVector Location)
 {
+	if (!Actor)
+	{
+		return;
+	}
 
+	for (int i = 0; i < Items.Num(); i++)
+	{
+		if (Items[i].Actor == Actor)
+		{
+			Items[i].Location = Location;
+			return;
+		}
+	}
+
+	FPerceivedTarget NewEntry;
+	NewEntry.Actor = Actor;
+	NewEntry.Location = Location;
+	NewEntry.LastSeenTime = 0.f;
+
+	Items.Add(NewEntry);
 }
 
 void AgentMemory::RegisterHouse(AActor * Actor, FVector Location)
@@ -53,6 +72,23 @@ void AgentMemory::UnregisterZombie(AActor* Actor)
 		if (Zombies[i].Actor == Actor)
 		{
 			Zombies.RemoveAt(i);
+			return;
+		}
+	}
+}
+
+void AgentMemory::UnregisterItem(ABaseItem* Item)
+{
+	if (!Item)
+	{
+		return;
+	}
+
+	for (int i = Items.Num() - 1; i >= 0; i--)
+	{
+		if (Items[i].Actor == Item)
+		{
+			Items.RemoveAt(i);
 			return;
 		}
 	}
@@ -95,4 +131,28 @@ FVector AgentMemory::GetClosestZombieLocation(const FVector& FromLocation) const
 	}
 
 	return Zombies[ClosestZombieIndex].Location;
+}
+
+ABaseItem* AgentMemory::GetClosestItem(const FVector& FromLocation) const
+{
+	if (Items.Num() == 0)
+	{
+		return nullptr;
+	}
+
+	int ClosestItemIndex = 0;
+	float ClosestDistanceSquared = FVector::DistSquared(Items[0].Location, FromLocation);
+
+	for (int i = 1; i < Items.Num(); i++)
+	{
+		float CurrentDistanceSquared = FVector::DistSquared(Items[i].Location, FromLocation);
+
+		if (CurrentDistanceSquared < ClosestDistanceSquared)
+		{
+			ClosestDistanceSquared = CurrentDistanceSquared;
+			ClosestItemIndex = i;
+		}
+	}
+
+	return Cast<ABaseItem>(Items[ClosestItemIndex].Actor);
 }

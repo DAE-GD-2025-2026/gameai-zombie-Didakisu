@@ -41,6 +41,18 @@ void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 			AgentController.GetMemory().UnregisterZombie(Actor);
 		}
 	}
+
+	if (Cast<ABaseItem>(Actor))
+	{
+		if (Stimulus.WasSuccessfullySensed())
+		{
+			AgentController.GetMemory().RegisterItem(Actor, Stimulus.StimulusLocation);
+		}
+		else
+		{
+			AgentController.GetMemory().UnregisterItem(Cast<ABaseItem>(Actor));
+		}
+	}
 }
 
 void UStudentPerceptor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

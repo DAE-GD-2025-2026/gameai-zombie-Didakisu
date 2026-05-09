@@ -1,6 +1,5 @@
 #include "States/WanderState.h"
 #include "Survivor/SurvivorPawn.h"
-#include "SteeringBehaviors.h"
 
 WanderState::WanderState(ASurvivorPawn* InPawn)
 {
