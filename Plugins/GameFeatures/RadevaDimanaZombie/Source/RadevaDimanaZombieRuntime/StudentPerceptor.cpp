@@ -49,10 +49,12 @@ void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 		{
 			AgentController.GetMemory().RegisterItem(Actor, Stimulus.StimulusLocation);
 		}
-		else
+
+		//items shouldnt be forgotten that fast
+		/*else
 		{
 			AgentController.GetMemory().UnregisterItem(Cast<ABaseItem>(Actor));
-		}
+		}*/
 	}
 
 	/*if (Cast<AHouse>(Actor))

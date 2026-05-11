@@ -39,5 +39,6 @@ private:
 	TArray<FPerceivedTarget> Houses;
 
 	float ElapsedTime = 0.f;
-	float ForgetTime = 3.f;
+	float ZombieForgetTime = 3.f;
+	float ItemForgetTime = 10.f;
 };

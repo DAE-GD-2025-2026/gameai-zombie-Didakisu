@@ -22,12 +22,12 @@ void CollectState::OnExit()
 
 void CollectState::Update(float DeltaTime)
 {
-	if (!TargetItem && Memory->GetItems().Num() > 0)
+	if ((!TargetItem || !IsValid(TargetItem)) && Memory->GetItems().Num() > 0)
 	{
 		TargetItem = Memory->GetClosestItem(Pawn->GetActorLocation());
 	}
 
-	if (!Pawn || !TargetItem)
+	if (!Pawn || !TargetItem || !IsValid(TargetItem))
 	{
 		return;
 	}

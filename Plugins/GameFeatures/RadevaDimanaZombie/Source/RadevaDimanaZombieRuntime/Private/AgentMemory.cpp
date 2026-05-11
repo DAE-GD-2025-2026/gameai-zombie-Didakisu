@@ -11,7 +11,12 @@ void AgentMemory::Update(float DeltaTime)
 
 	Zombies.RemoveAll([&](const FPerceivedTarget& Entry)
 	{
-		return (ElapsedTime - Entry.LastSeenTime) > ForgetTime;
+		return (ElapsedTime - Entry.LastSeenTime) > ZombieForgetTime;
+	});
+
+	Items.RemoveAll([&](const FPerceivedTarget& Entry)
+	{
+		return !IsValid(Entry.Actor) || (ElapsedTime - Entry.LastSeenTime) > ItemForgetTime;
 	});
 }
 
@@ -43,7 +48,7 @@ void AgentMemory::RegisterZombie(AActor* Actor, FVector Location/*, float Curren
 
 void AgentMemory::RegisterItem(AActor * Actor, FVector Location)
 {
-	if (!Actor)
+	if (!Actor || Actor->IsHidden())
 	{
 		return;
 	}
@@ -53,6 +58,7 @@ void AgentMemory::RegisterItem(AActor * Actor, FVector Location)
 		if (Items[i].Actor == Actor)
 		{
 			Items[i].Location = Location;
+			Items[i].LastSeenTime = ElapsedTime;
 			return;
 		}
 	}
@@ -60,7 +66,7 @@ void AgentMemory::RegisterItem(AActor * Actor, FVector Location)
 	FPerceivedTarget NewEntry;
 	NewEntry.Actor = Actor;
 	NewEntry.Location = Location;
-	NewEntry.LastSeenTime = 0.f;
+	NewEntry.LastSeenTime = ElapsedTime;
 
 	Items.Add(NewEntry);
 }
@@ -207,5 +213,11 @@ ABaseItem* AgentMemory::GetClosestItem(const FVector& FromLocation) const
 		}
 	}
 
-	return Cast<ABaseItem>(Items[ClosestItemIndex].Actor);
+	ABaseItem* Item = Cast<ABaseItem>(Items[ClosestItemIndex].Actor);
+	if (!IsValid(Item))
+	{
+		return nullptr;
+	}
+
+	return Item;
 }
