@@ -37,12 +37,10 @@ void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 		GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Green, FString::Printf(TEXT("Saw a zombie!")));
 		if (Stimulus.WasSuccessfullySensed())
 		{
-			AgentController.GetMemory().RegisterZombie(Actor, Stimulus.StimulusLocation, CurrentTime);
+			AgentController.GetMemory().RegisterZombie(Actor, Stimulus.StimulusLocation/*, CurrentTime*/);
 		}
-		else
-		{
-			AgentController.GetMemory().UnregisterZombie(Actor);
-		}
+		//zombies get cleaned when the ForgetTime completes
+
 	}
 
 	if (Cast<ABaseItem>(Actor))
@@ -76,36 +74,6 @@ void UStudentPerceptor::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 		GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Red, TEXT("No Pawn!"));
 		return;
 	}
-
-
-
-
-	//cone forward direction
-	UAIPerceptionComponent* PerceptionComp = Pawn->GetComponentByClass<UAIPerceptionComponent>();
-	if (PerceptionComp)
-	{
-		UAISenseConfig_Sight* SightConfig = Cast<UAISenseConfig_Sight>(
-			PerceptionComp->GetSenseConfig(UAISense::GetSenseID<UAISense_Sight>()));
-		if (SightConfig)
-		{
-			float SightRadius = SightConfig->SightRadius;
-			float HalfAngle = SightConfig->PeripheralVisionAngleDegrees;
-
-			FVector PawnLocation = Pawn->GetActorLocation();
-			FVector Forward = Pawn->GetActorForwardVector();
-
-			FVector LeftDirection = Forward.RotateAngleAxis(-HalfAngle, FVector::UpVector);
-			FVector RightDirection = Forward.RotateAngleAxis(HalfAngle, FVector::UpVector);
-
-			DrawDebugLine(Pawn->GetWorld(), PawnLocation, PawnLocation + LeftDirection * SightRadius, FColor::Red, false, -1.f, 0, 2.f);
-			DrawDebugLine(Pawn->GetWorld(), PawnLocation, PawnLocation + RightDirection * SightRadius, FColor::Red, false, -1.f, 0, 2.f);
-			DrawDebugLine(Pawn->GetWorld(), PawnLocation, PawnLocation + Forward * SightRadius, FColor::Red, false, -1.f, 0, 2.f);
-		}
-	}
-
-
-
-
 
 	DrawVisionCone(Pawn);
 	AgentController.Update(DeltaTime);

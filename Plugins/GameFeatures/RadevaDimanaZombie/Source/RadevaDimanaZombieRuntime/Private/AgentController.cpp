@@ -71,25 +71,23 @@ void AgentController::Update(float DeltaTime)
 		return;
 	}
 
+	Memory.Update(DeltaTime);
 	StateMachine.Update(DeltaTime);
 
-	FVector Velocity = Pawn->GetVelocity();
-	Velocity.Z = 0.f;
+	FVector Dir = Pawn->GetVelocity();
+	Dir.Z = 0.f;
 
-	if (!Velocity.IsNearlyZero())
+	if (!Dir.IsNearlyZero())
 	{
-		auto Mesh = Pawn->GetRootComponent();
-		if (Mesh)
-		{
-			FRotator TargetRotation = FRotator(0.f, Velocity.Rotation().Yaw - 90.f, 0.f);
-			FRotator CurrentRotation = Mesh->GetRelativeRotation();
-			FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, 10.f);
-			Mesh->SetRelativeRotation(NewRotation);
-		}
+		Dir.Normalize();
+
+		FRotator TargetRotation = Dir.Rotation();
+		FRotator NewRotation = FMath::RInterpTo(Pawn->GetActorRotation(), TargetRotation, DeltaTime, 10.f);
+		Pawn->SetActorRotation(NewRotation);
 	}
 
-	//GEngine->AddOnScreenDebugMessage(10, 0.f, FColor::White,
-	//	FString::Printf(TEXT("Items: %d | Zombies: %d"),
-	//		Memory.GetItems().Num(),
-	//		Memory.GetZombies().Num()));
+	GEngine->AddOnScreenDebugMessage(10, 0.f, FColor::White,
+		FString::Printf(TEXT("Items: %d | Zombies: %d"),
+			Memory.GetItems().Num(),
+			Memory.GetZombies().Num()));
 }

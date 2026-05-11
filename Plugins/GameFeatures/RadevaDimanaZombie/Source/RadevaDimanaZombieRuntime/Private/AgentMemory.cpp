@@ -5,7 +5,17 @@ AgentMemory::AgentMemory()
 
 }
 
-void AgentMemory::RegisterZombie(AActor* Actor, FVector Location, float CurrentTime)
+void AgentMemory::Update(float DeltaTime)
+{
+	ElapsedTime += DeltaTime;
+
+	Zombies.RemoveAll([&](const FPerceivedTarget& Entry)
+	{
+		return (ElapsedTime - Entry.LastSeenTime) > ForgetTime;
+	});
+}
+
+void AgentMemory::RegisterZombie(AActor* Actor, FVector Location/*, float CurrentTime*/)
 {
 	if (!Actor)
 	{
@@ -18,7 +28,7 @@ void AgentMemory::RegisterZombie(AActor* Actor, FVector Location, float CurrentT
 		if (Zombies[i].Actor == Actor)
 		{
 			Zombies[i].Location = Location;
-			Zombies[i].LastSeenTime = CurrentTime;
+			Zombies[i].LastSeenTime = ElapsedTime;
 			return;
 		}
 	}
@@ -26,7 +36,7 @@ void AgentMemory::RegisterZombie(AActor* Actor, FVector Location, float CurrentT
 	FPerceivedTarget NewEntry;
 	NewEntry.Actor = Actor;
 	NewEntry.Location = Location;
-	NewEntry.LastSeenTime = CurrentTime;
+	NewEntry.LastSeenTime = ElapsedTime;
 
 	Zombies.Add(NewEntry);
 }

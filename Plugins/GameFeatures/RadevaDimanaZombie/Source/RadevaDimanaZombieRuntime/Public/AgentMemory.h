@@ -16,7 +16,9 @@ class AgentMemory
 {
 public: 
 	AgentMemory();
-	void RegisterZombie(AActor* Actor, FVector Location, float CurrentTime);
+	void Update(float DeltaTime);
+
+	void RegisterZombie(AActor* Actor, FVector Location/*, float CurrentTime*/);
 	void RegisterItem(AActor* Actor, FVector Location);
 	//void RegisterHouse(AActor* Actor, FVector Location);
 
@@ -30,8 +32,12 @@ public:
 	FVector GetClosestZombieLocation(const FVector& FromLocation) const;
 	//FVector GetClosestHouseLocation(const FVector& FromLocation) const;
 	ABaseItem* GetClosestItem(const FVector& FromLocation) const;
+	void SetForgetTime(float NewForgetTime) {}
 private:
 	TArray<FPerceivedTarget> Zombies;
 	TArray<FPerceivedTarget> Items;
 	TArray<FPerceivedTarget> Houses;
+
+	float ElapsedTime = 0.f;
+	float ForgetTime = 3.f;
 };

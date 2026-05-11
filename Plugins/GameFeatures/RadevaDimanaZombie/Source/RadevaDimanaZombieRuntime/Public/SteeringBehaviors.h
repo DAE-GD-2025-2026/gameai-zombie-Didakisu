@@ -8,10 +8,11 @@ class Wander
 public:
 	FVector CalculateSteering(ASurvivorPawn* Pawn, float DeltaTime);
 private:
-	float WanderAngle{ 0.f };
-	float TimeSinceLastUpdate{ 0.f };
-	float TimeBetweenDirectionChange{ 2.f };
-	FVector SmoothedDirection = FVector::ForwardVector;
+	float WanderAngle = 0.f;
+
+	float CircleDistance = 300.f; 
+	float CircleRadius = 150.f;  
+	float WanderJitter = 2.f;
 };
 
 class Seek
