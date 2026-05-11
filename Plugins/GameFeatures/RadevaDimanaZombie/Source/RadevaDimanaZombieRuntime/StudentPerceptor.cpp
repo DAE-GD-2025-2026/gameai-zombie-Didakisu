@@ -3,6 +3,9 @@
 #include "Zombies/BaseZombie.h"
 #include "SurvivorAIController.h"
 #include "Survivor/SurvivorPawn.h"
+#include "Village/House/House.h"
+#include "GameFramework/SpectatorPawn.h"
+#include "GameFramework/SpringArmComponent.h"
 
 UStudentPerceptor::UStudentPerceptor()
 {
@@ -53,6 +56,14 @@ void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 			AgentController.GetMemory().UnregisterItem(Cast<ABaseItem>(Actor));
 		}
 	}
+
+	/*if (Cast<AHouse>(Actor))
+	{
+		if (Stimulus.WasSuccessfullySensed())
+		{
+			AgentController.GetMemory().RegisterHouse(Actor, Stimulus.StimulusLocation);
+		}
+	}*/
 }
 
 void UStudentPerceptor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -66,32 +77,56 @@ void UStudentPerceptor::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 		return;
 	}
 
+
+
+
+	//cone forward direction
+	UAIPerceptionComponent* PerceptionComp = Pawn->GetComponentByClass<UAIPerceptionComponent>();
+	if (PerceptionComp)
+	{
+		UAISenseConfig_Sight* SightConfig = Cast<UAISenseConfig_Sight>(
+			PerceptionComp->GetSenseConfig(UAISense::GetSenseID<UAISense_Sight>()));
+		if (SightConfig)
+		{
+			float SightRadius = SightConfig->SightRadius;
+			float HalfAngle = SightConfig->PeripheralVisionAngleDegrees;
+
+			FVector PawnLocation = Pawn->GetActorLocation();
+			FVector Forward = Pawn->GetActorForwardVector();
+
+			FVector LeftDirection = Forward.RotateAngleAxis(-HalfAngle, FVector::UpVector);
+			FVector RightDirection = Forward.RotateAngleAxis(HalfAngle, FVector::UpVector);
+
+			DrawDebugLine(Pawn->GetWorld(), PawnLocation, PawnLocation + LeftDirection * SightRadius, FColor::Red, false, -1.f, 0, 2.f);
+			DrawDebugLine(Pawn->GetWorld(), PawnLocation, PawnLocation + RightDirection * SightRadius, FColor::Red, false, -1.f, 0, 2.f);
+			DrawDebugLine(Pawn->GetWorld(), PawnLocation, PawnLocation + Forward * SightRadius, FColor::Red, false, -1.f, 0, 2.f);
+		}
+	}
+
+
+
+
+
 	DrawVisionCone(Pawn);
 	AgentController.Update(DeltaTime);
-
-	/*FVector Direction = WanderBehavior.CalculateSteering(Pawn, DeltaTime);
-	Pawn->AddMovementInput(Direction, 1.f);*/
 }
 
 void UStudentPerceptor::DrawVisionCone(ASurvivorPawn* Pawn)
 {
 	UAIPerceptionComponent* PerceptionComp = Pawn->GetComponentByClass<UAIPerceptionComponent>();
-	if (!PerceptionComp)
-	{
-		return;
-	}
+	if (!PerceptionComp) return;
 
-	UAISenseConfig_Sight* SightConfig = Cast<UAISenseConfig_Sight>(PerceptionComp->GetSenseConfig(UAISense::GetSenseID<UAISense_Sight>()));
-	if (!SightConfig)
-	{
-		return;
-	}
+	UAISenseConfig_Sight* SightConfig = Cast<UAISenseConfig_Sight>(
+		PerceptionComp->GetSenseConfig(UAISense::GetSenseID<UAISense_Sight>()));
+	if (!SightConfig) return;
 
 	float SightRadius = SightConfig->SightRadius;
 	float HalfAngle = SightConfig->PeripheralVisionAngleDegrees;
 
 	FVector PawnLocation = Pawn->GetActorLocation();
-	FVector ForwardVector = Pawn->GetActorForwardVector();
+
+	USkeletalMeshComponent* Mesh = Pawn->GetComponentByClass<USkeletalMeshComponent>();
+	FVector ForwardVector = Mesh ? Mesh->GetRightVector() : Pawn->GetActorForwardVector();
 
 	FVector LeftDirection = ForwardVector.RotateAngleAxis(-HalfAngle, FVector::UpVector);
 	FVector RightDirection = ForwardVector.RotateAngleAxis(HalfAngle, FVector::UpVector);

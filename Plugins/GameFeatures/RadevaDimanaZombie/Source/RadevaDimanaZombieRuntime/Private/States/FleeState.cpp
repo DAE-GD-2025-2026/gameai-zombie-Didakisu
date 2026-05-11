@@ -37,5 +37,5 @@ void FleeState::Update(float DeltaTime)
 	Direction.Z = 0.f;
 	Direction = Direction.GetSafeNormal();
 
-	Pawn->AddMovementInput(Direction, 1.f);
+	Pawn->AddMovementInput(Direction, 0.4f);
 }
