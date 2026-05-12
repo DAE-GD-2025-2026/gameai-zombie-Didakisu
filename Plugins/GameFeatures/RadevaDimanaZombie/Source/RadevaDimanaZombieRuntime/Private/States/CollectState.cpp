@@ -22,11 +22,21 @@ void CollectState::OnExit()
 
 void CollectState::Update(float DeltaTime)
 {
+	UpdateToTarget();
+	MoveToTarget();
+	TryPickUp();
+}
+
+void CollectState::UpdateToTarget()
+{
 	if ((!TargetItem || !IsValid(TargetItem)) && Memory->GetItems().Num() > 0)
 	{
 		TargetItem = Memory->GetClosestItem(Pawn->GetActorLocation());
 	}
+}
 
+void CollectState::MoveToTarget()
+{
 	if (!Pawn || !TargetItem || !IsValid(TargetItem))
 	{
 		return;
@@ -34,8 +44,10 @@ void CollectState::Update(float DeltaTime)
 
 	FVector Direction = SeekBehavior.CalculateSteering(Pawn, TargetItem->GetActorLocation());
 	Pawn->AddMovementInput(Direction, 0.3f);
+}
 
-	//pick up
+void CollectState::TryPickUp()
+{
 	float Distance = FVector::Dist(Pawn->GetActorLocation(), TargetItem->GetActorLocation());
 	if (Distance < 100.f)
 	{

@@ -15,6 +15,10 @@ public:
 	void OnExit() override;
 	void Update(float DeltaTime) override;
 private:
+	void UpdateToTarget();
+	void MoveToTarget();
+	void TryPickUp();
+
 	ASurvivorPawn* Pawn = nullptr;
 	AgentMemory* Memory = nullptr;
 	ABaseItem* TargetItem = nullptr;
