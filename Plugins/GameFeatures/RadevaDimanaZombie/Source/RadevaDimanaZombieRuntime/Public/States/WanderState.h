@@ -14,9 +14,12 @@ public:
 	void OnExit() override;
 	void Update(float DeltaTime) override;
 private:
-	ASurvivorPawn* Pawn = nullptr;
-	AgentMemory* Memory = nullptr;
+	void PickNewNavMeshTarget();
 
-	Wander WanderBehavior;
-	Seek SeekBehavior;
+	ASurvivorPawn* Pawn = nullptr;
+	FVector NavTarget = FVector::ZeroVector;
+	bool bHasTarget = false;
+
+	float AcceptanceRadius = 150.f;
+	float SearchRadius = 2000.f;
 };

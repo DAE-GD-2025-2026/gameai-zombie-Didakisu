@@ -27,7 +27,8 @@ public class RadevaDimanaZombieRuntime : ModuleRules
 			{
 				"Core",
 				"CoreUObject",
-				"Engine"
+				"Engine",
+				"NavigationSystem"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

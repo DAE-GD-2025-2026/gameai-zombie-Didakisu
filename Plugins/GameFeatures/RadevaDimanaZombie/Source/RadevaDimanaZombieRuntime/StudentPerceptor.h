@@ -34,7 +34,7 @@ public:
 private:
 	Seek SeekBehavior;
 	Flee FleeBehavior;
-	Wander WanderBehavior;
+	//Wander WanderBehavior;
 
 	AgentController AgentController;
 	//AgentMemory Memory;
