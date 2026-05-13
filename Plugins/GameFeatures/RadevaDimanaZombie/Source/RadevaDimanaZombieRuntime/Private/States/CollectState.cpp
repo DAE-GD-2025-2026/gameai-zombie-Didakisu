@@ -48,7 +48,13 @@ void CollectState::MoveToTarget()
 
 void CollectState::TryPickUp()
 {
+	if (!Pawn || !TargetItem || !IsValid(TargetItem))
+	{
+		return;
+	}
+
 	float Distance = FVector::Dist(Pawn->GetActorLocation(), TargetItem->GetActorLocation());
+
 	if (Distance < 100.f)
 	{
 		UInventoryComponent* Inventory = Pawn->GetComponentByClass<UInventoryComponent>();
