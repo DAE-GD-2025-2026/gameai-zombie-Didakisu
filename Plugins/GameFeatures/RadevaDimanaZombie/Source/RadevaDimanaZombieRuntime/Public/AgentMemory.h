@@ -19,8 +19,8 @@ public:
 	void Update(float DeltaTime);
 
 	void RegisterZombie(AActor* Actor, FVector Location/*, float CurrentTime*/);
-	void RegisterItem(AActor* Actor, FVector Location);
-	//void RegisterHouse(AActor* Actor, FVector Location);
+	void RegisterItem(AActor* Actor, FVector Location, FVector AgentLocation);
+	void RegisterHouse(AActor* Actor, FVector Location);
 
 	void UnregisterZombie(AActor* Actor);
 	void UnregisterItem(ABaseItem* Item);
@@ -30,9 +30,12 @@ public:
 	const TArray<FPerceivedTarget>& GetHouses() const;
 
 	FVector GetClosestZombieLocation(const FVector& FromLocation) const;
-	//FVector GetClosestHouseLocation(const FVector& FromLocation) const;
+	AActor* GetClosestHouse(const FVector& FromLocation) const;
 	ABaseItem* GetClosestItem(const FVector& FromLocation) const;
 	void SetForgetTime(float NewForgetTime) {}
+
+	void MarkHouseVisited(AActor* House);
+	bool IsHouseVisited(AActor* House) const;
 private:
 	TArray<FPerceivedTarget> Zombies;
 	TArray<FPerceivedTarget> Items;
@@ -41,4 +44,6 @@ private:
 	float ElapsedTime = 0.f;
 	float ZombieForgetTime = 3.f;
 	float ItemForgetTime = 10.f;
+
+	TArray<AActor*> VisitedHouses;
 };

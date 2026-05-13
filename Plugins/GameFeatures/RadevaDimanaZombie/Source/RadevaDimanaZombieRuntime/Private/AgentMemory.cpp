@@ -18,6 +18,11 @@ void AgentMemory::Update(float DeltaTime)
 	{
 		return !IsValid(Entry.Actor) || (ElapsedTime - Entry.LastSeenTime) > ItemForgetTime;
 	});
+
+	Houses.RemoveAll([&](const FPerceivedTarget& Entry)
+	{
+		return !IsValid(Entry.Actor);
+	});
 }
 
 void AgentMemory::RegisterZombie(AActor* Actor, FVector Location/*, float CurrentTime*/)
@@ -46,19 +51,56 @@ void AgentMemory::RegisterZombie(AActor* Actor, FVector Location/*, float Curren
 	Zombies.Add(NewEntry);
 }
 
-void AgentMemory::RegisterItem(AActor * Actor, FVector Location)
+void AgentMemory::RegisterItem(AActor* Actor, FVector Location, FVector AgentLocation)
 {
 	if (!Actor || Actor->IsHidden())
 	{
 		return;
 	}
 
-	for (int i = 0; i < Items.Num(); i++)
+	//register the item only when the survivor is in the house
+	for (int h = 0; h < Houses.Num(); h++)
 	{
-		if (Items[i].Actor == Actor)
+		if (!IsValid(Houses[h].Actor))
 		{
-			Items[i].Location = Location;
-			Items[i].LastSeenTime = ElapsedTime;
+			continue;
+		}
+
+		FBox Bounds = Houses[h].Actor->GetComponentsBoundingBox();
+		if (Bounds.IsInsideOrOn(AgentLocation))
+		{
+			for (int i = 0; i < Items.Num(); i++)
+			{
+				if (Items[i].Actor == Actor)
+				{
+					Items[i].Location = Location;
+					Items[i].LastSeenTime = ElapsedTime;
+					return;
+				}
+			}
+
+			FPerceivedTarget NewEntry;
+			NewEntry.Actor = Actor;
+			NewEntry.Location = Location;
+			NewEntry.LastSeenTime = ElapsedTime;
+			Items.Add(NewEntry);
+			return;
+		}
+	}
+}
+
+void AgentMemory::RegisterHouse(AActor * Actor, FVector Location)
+{
+	if (!Actor)
+	{
+		return;
+	}
+
+	for (int i = 0; i < Houses.Num(); i++)
+	{
+		if (Houses[i].Actor == Actor)
+		{
+			Houses[i].Location = Location;
 			return;
 		}
 	}
@@ -66,34 +108,10 @@ void AgentMemory::RegisterItem(AActor * Actor, FVector Location)
 	FPerceivedTarget NewEntry;
 	NewEntry.Actor = Actor;
 	NewEntry.Location = Location;
-	NewEntry.LastSeenTime = ElapsedTime;
+	NewEntry.LastSeenTime = 0.f;
 
-	Items.Add(NewEntry);
+	Houses.Add(NewEntry);
 }
-
-//void AgentMemory::RegisterHouse(AActor * Actor, FVector Location)
-//{
-//	if (!Actor)
-//	{
-//		return;
-//	}
-//
-//	for (int i = 0; i < Houses.Num(); i++)
-//	{
-//		if (Houses[i].Actor == Actor)
-//		{
-//			Houses[i].Location = Location;
-//			return;
-//		}
-//	}
-//
-//	FPerceivedTarget NewEntry;
-//	NewEntry.Actor = Actor;
-//	NewEntry.Location = Location;
-//	NewEntry.LastSeenTime = 0.f;
-//
-//	Houses.Add(NewEntry);
-//}
 
 void AgentMemory::UnregisterZombie(AActor* Actor)
 {
@@ -168,29 +186,36 @@ FVector AgentMemory::GetClosestZombieLocation(const FVector& FromLocation) const
 	return Zombies[ClosestZombieIndex].Location;
 }
 
-//FVector AgentMemory::GetClosestHouseLocation(const FVector& FromLocation) const
-//{
-//	if (Houses.Num() == 0)
-//	{
-//		return FVector::ZeroVector;
-//	}
-//
-//	int ClosestHouseIndex = 0;
-//	float ClosestDistanceSquared = FVector::DistSquared(Houses[0].Location, FromLocation);
-//
-//	for (int i = 1; i < Houses.Num(); i++)
-//	{
-//		float CurrentDistanceSquared = FVector::DistSquared(Houses[i].Location, FromLocation);
-//
-//		if (CurrentDistanceSquared < ClosestDistanceSquared)
-//		{
-//			ClosestDistanceSquared = CurrentDistanceSquared;
-//			ClosestHouseIndex = i;
-//		}
-//	}
-//
-//	return Houses[ClosestHouseIndex].Location;
-//}
+AActor* AgentMemory::GetClosestHouse(const FVector& FromLocation) const
+{
+	if (Houses.Num() == 0)
+	{
+		return nullptr;
+	}
+
+	int ClosestHouseIndex = 0;
+	float ClosestDistanceSquared = FVector::DistSquared(Houses[0].Location, FromLocation);
+
+	for (int i = 1; i < Houses.Num(); i++)
+	{
+		float CurrentDistanceSquared = FVector::DistSquared(Houses[i].Location, FromLocation);
+
+		if (CurrentDistanceSquared < ClosestDistanceSquared)
+		{
+			ClosestDistanceSquared = CurrentDistanceSquared;
+			ClosestHouseIndex = i;
+		}
+	}
+
+	AActor* ClosestActor = Houses[ClosestHouseIndex].Actor;
+
+	if (!IsValid(ClosestActor))
+	{
+		return nullptr;
+	}
+
+	return ClosestActor;
+}
 
 ABaseItem* AgentMemory::GetClosestItem(const FVector& FromLocation) const
 {
@@ -220,4 +245,19 @@ ABaseItem* AgentMemory::GetClosestItem(const FVector& FromLocation) const
 	}
 
 	return Item;
+}
+
+void AgentMemory::MarkHouseVisited(AActor* House)
+{
+	if (!House)
+	{
+		return;
+	}
+
+	VisitedHouses.AddUnique(House);
+}
+
+bool AgentMemory::IsHouseVisited(AActor* House) const
+{
+	return VisitedHouses.Contains(House);
 }
