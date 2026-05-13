@@ -47,23 +47,18 @@ void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 	{
 		if (Stimulus.WasSuccessfullySensed())
 		{
-			AgentController.GetMemory().RegisterItem(Actor, Stimulus.StimulusLocation);
+			ASurvivorPawn* Pawn = Cast<ASurvivorPawn>(GetOwner());
+			AgentController.GetMemory().RegisterItem(Actor, Stimulus.StimulusLocation, Pawn->GetActorLocation());
 		}
-
-		//items shouldnt be forgotten that fast
-		/*else
-		{
-			AgentController.GetMemory().UnregisterItem(Cast<ABaseItem>(Actor));
-		}*/
 	}
 
-	/*if (Cast<AHouse>(Actor))
+	if (Cast<AHouse>(Actor))
 	{
 		if (Stimulus.WasSuccessfullySensed())
 		{
 			AgentController.GetMemory().RegisterHouse(Actor, Stimulus.StimulusLocation);
 		}
-	}*/
+	}
 }
 
 void UStudentPerceptor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

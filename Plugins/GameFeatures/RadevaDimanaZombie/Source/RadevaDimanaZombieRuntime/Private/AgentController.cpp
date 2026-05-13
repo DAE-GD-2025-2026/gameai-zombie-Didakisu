@@ -19,7 +19,7 @@ void AgentController::Initialize(ASurvivorPawn* InPawn)
 	}
 
 	auto FleeStatePtr = std::make_unique<FleeState>(Pawn, &Memory);
-	auto WanderStatePtr = std::make_unique<WanderState>(Pawn/*, &Memory*/);
+	auto WanderStatePtr = std::make_unique<WanderState>(Pawn, &Memory);
 	auto CollectStatePtr = std::make_unique<CollectState>(Pawn, &Memory);
 
 	Flee = FleeStatePtr.get();
