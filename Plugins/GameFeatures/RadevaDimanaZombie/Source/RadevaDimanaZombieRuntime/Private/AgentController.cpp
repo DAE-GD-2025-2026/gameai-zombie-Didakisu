@@ -43,12 +43,12 @@ void AgentController::Initialize(ASurvivorPawn* InPawn)
 
 	StateMachine.AddTransition(Wander, Collect, [this]()
 	{
-		return Memory.GetItems().Num() > 0;
+		return Memory.GetItems().Num() > 0 && !Collect->IsInventoryFull();
 	});
 
 	StateMachine.AddTransition(Collect, Wander, [this]()
 	{
-		return Memory.GetItems().Num() == 0;
+		return Memory.GetItems().Num() == 0 || Collect->IsInventoryFull();
 	});
 
 	StateMachine.AddTransition(Collect, Flee, [this]()

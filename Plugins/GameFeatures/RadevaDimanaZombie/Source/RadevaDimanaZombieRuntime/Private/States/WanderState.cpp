@@ -113,7 +113,7 @@ void WanderState::Update(float DeltaTime)
 
     if (Memory && Memory->GetHouses().Num() > 0)
     {
-        AActor* ClosestHouse = Memory->GetClosestHouse(Pawn->GetActorLocation());
+        AActor* ClosestHouse = Memory->GetClosestHouse(Pawn->GetActorLocation(), true);
 
         if (ClosestHouse)
         {
@@ -129,7 +129,7 @@ void WanderState::Update(float DeltaTime)
                 //entered the closest house, mark visited
                 Memory->MarkHouseVisited(ClosestHouse);
                 bSeekingHouse = false;
-                bHasTarget = false;
+                //bHasTarget = false;
                 CurrentPath.Empty();
                 CurrentPathIndex = 0;
             }

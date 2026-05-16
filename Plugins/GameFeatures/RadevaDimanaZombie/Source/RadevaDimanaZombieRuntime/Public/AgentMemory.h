@@ -30,7 +30,7 @@ public:
 	const TArray<FPerceivedTarget>& GetHouses() const;
 
 	FVector GetClosestZombieLocation(const FVector& FromLocation) const;
-	AActor* GetClosestHouse(const FVector& FromLocation) const;
+	AActor* GetClosestHouse(const FVector& FromLocation, bool bUnvisitedOnly = false) const;
 	ABaseItem* GetClosestItem(const FVector& FromLocation) const;
 	void SetForgetTime(float NewForgetTime) {}
 

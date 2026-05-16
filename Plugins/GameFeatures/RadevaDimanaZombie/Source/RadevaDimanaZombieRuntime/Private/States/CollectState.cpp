@@ -10,6 +10,7 @@ CollectState::CollectState(ASurvivorPawn* InPawn, AgentMemory* InMemory)
 
 void CollectState::OnEnter()
 {
+	bInventoryFull = false;
 	TargetItem = Memory->GetClosestItem(Pawn->GetActorLocation());
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, TEXT("Entering Collect State"));
 }
@@ -82,5 +83,6 @@ void CollectState::TryPickUp()
 	{
 		Memory->UnregisterItem(TargetItem);
 		TargetItem = nullptr;
+		bInventoryFull = true;
 	}
 }

@@ -14,6 +14,8 @@ public:
 	void OnEnter() override;
 	void OnExit() override;
 	void Update(float DeltaTime) override;
+
+	bool IsInventoryFull() const { return bInventoryFull; }
 private:
 	void UpdateToTarget();
 	void MoveToTarget();
@@ -24,4 +26,5 @@ private:
 	ABaseItem* TargetItem = nullptr;
 
 	Seek SeekBehavior;
+	bool bInventoryFull = false;
 };

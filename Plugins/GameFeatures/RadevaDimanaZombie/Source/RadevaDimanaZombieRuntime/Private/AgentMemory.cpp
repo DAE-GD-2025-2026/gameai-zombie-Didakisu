@@ -186,7 +186,7 @@ FVector AgentMemory::GetClosestZombieLocation(const FVector& FromLocation) const
 	return Zombies[ClosestZombieIndex].Location;
 }
 
-AActor* AgentMemory::GetClosestHouse(const FVector& FromLocation) const
+AActor* AgentMemory::GetClosestHouse(const FVector& FromLocation, bool bUnvisitedOnly) const
 {
 	if (Houses.Num() == 0)
 	{
@@ -196,8 +196,18 @@ AActor* AgentMemory::GetClosestHouse(const FVector& FromLocation) const
 	int ClosestHouseIndex = 0;
 	float ClosestDistanceSquared = FVector::DistSquared(Houses[0].Location, FromLocation);
 
-	for (int i = 1; i < Houses.Num(); i++)
+	for (int i = 0; i < Houses.Num(); i++)
 	{
+		if (!IsValid(Houses[i].Actor))
+		{
+			continue;
+		}
+
+		if (bUnvisitedOnly && VisitedHouses.Contains(Houses[i].Actor))
+		{
+			continue;
+		}
+
 		float CurrentDistanceSquared = FVector::DistSquared(Houses[i].Location, FromLocation);
 
 		if (CurrentDistanceSquared < ClosestDistanceSquared)
