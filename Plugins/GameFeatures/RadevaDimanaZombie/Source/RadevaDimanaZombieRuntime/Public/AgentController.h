@@ -20,6 +20,11 @@ public:
 
 	AgentMemory& GetMemory() { return Memory; }
 	FSM& GetFSM() { return StateMachine; }
+
+	int FindItemOfType(UInventoryComponent* Inventory, EItemType Type);
+	void HandleItemUsage();
+	void SetUnderAttack(bool bValue) { bUnderAttack = bValue; }
+	bool IsUnderAttack() const { return bUnderAttack; }
 private:
 	ASurvivorPawn* Pawn = nullptr;
 
@@ -29,4 +34,7 @@ private:
 	FleeState* Flee;
 	WanderState* Wander;
 	CollectState* Collect;
+
+	bool bUnderAttack = false;
+	int LastHealth = 10;
 };
