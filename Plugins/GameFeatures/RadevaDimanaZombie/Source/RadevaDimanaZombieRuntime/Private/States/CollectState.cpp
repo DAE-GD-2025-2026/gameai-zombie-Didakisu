@@ -54,21 +54,33 @@ void CollectState::TryPickUp()
 	}
 
 	float Distance = FVector::Dist(Pawn->GetActorLocation(), TargetItem->GetActorLocation());
-
-	if (Distance < 100.f)
+	if (Distance >= 100.f)
 	{
-		UInventoryComponent* Inventory = Pawn->GetComponentByClass<UInventoryComponent>();
-		if (Inventory)
+		return;
+	}
+
+	UInventoryComponent* Inventory = Pawn->GetComponentByClass<UInventoryComponent>();
+	if (!Inventory)
+	{
+		return;
+	}
+
+	bool bPickedUp = false;
+
+	for (int i = 0; i < Inventory->GetInventoryCapacity(); i++)
+	{
+		if (Inventory->GrabItem(i, TargetItem))
 		{
-			for (int i = 0; i < 5; i++)
-			{
-				if (Inventory->GrabItem(i, TargetItem))
-				{
-					Memory->UnregisterItem(TargetItem);
-					TargetItem = nullptr;
-					break;
-				}
-			}
+			Memory->UnregisterItem(TargetItem);
+			TargetItem = nullptr;
+			bPickedUp = true;
+			break;
 		}
+	}
+
+	if (!bPickedUp)
+	{
+		Memory->UnregisterItem(TargetItem);
+		TargetItem = nullptr;
 	}
 }
