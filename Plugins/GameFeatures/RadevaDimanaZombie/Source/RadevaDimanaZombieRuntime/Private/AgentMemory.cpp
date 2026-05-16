@@ -58,6 +58,12 @@ void AgentMemory::RegisterItem(AActor* Actor, FVector Location, FVector AgentLoc
 		return;
 	}
 
+	ABaseItem* Item = Cast<ABaseItem>(Actor);
+	if (!Item || Item->GetItemType() == EItemType::Garbage)
+	{
+		return;
+	}
+
 	//register the item only when the survivor is in the house
 	for (int h = 0; h < Houses.Num(); h++)
 	{
