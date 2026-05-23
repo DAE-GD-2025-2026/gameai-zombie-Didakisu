@@ -23,19 +23,38 @@ void AgentController::Initialize(ASurvivorPawn* InPawn)
 	auto FleeStatePtr = std::make_unique<FleeState>(Pawn, &Memory);
 	auto WanderStatePtr = std::make_unique<WanderState>(Pawn, &Memory);
 	auto CollectStatePtr = std::make_unique<CollectState>(Pawn, &Memory);
+	auto FightBackStatePtr = std::make_unique<FightBackState>(Pawn, &Memory);
 
 	Flee = FleeStatePtr.get();
 	Wander = WanderStatePtr.get();
 	Collect = CollectStatePtr.get();
+	FightBack = FightBackStatePtr.get();
 
 	StateMachine.AddState(std::move(FleeStatePtr));
 	StateMachine.AddState(std::move(WanderStatePtr));
 	StateMachine.AddState(std::move(CollectStatePtr));
+	StateMachine.AddState(std::move(FightBackStatePtr));
 
 	//transitions
+
+	StateMachine.AddTransition(Wander, FightBack, [this]()
+	{
+		return Memory.GetZombies().Num() > 0 && FightBack->HasWeapon();
+	});
+
 	StateMachine.AddTransition(Wander, Flee, [this]()
 	{
-		return Memory.GetZombies().Num() > 0;
+		return Memory.GetZombies().Num() > 0 && !FightBack->HasWeapon();
+	});
+
+	StateMachine.AddTransition(FightBack, Wander, [this]()
+	{
+		return Memory.GetZombies().Num() == 0;
+	});
+
+	StateMachine.AddTransition(FightBack, Flee, [this]()
+	{
+		return Memory.GetZombies().Num() > 0 && !FightBack->HasWeapon();
 	});
 
 	StateMachine.AddTransition(Flee, Wander, [this]()
@@ -123,13 +142,13 @@ void AgentController::HandleItemUsage()
 
 	//detect damage by comparing health each frame
 	int CurrentHealth = Health->GetHealth();
+
 	if (CurrentHealth < LastHealth)
 	{
-		bUnderAttack = true;
+		//bUnderAttack = true;
 		GEngine->AddOnScreenDebugMessage(23, 2.f, FColor::Red, TEXT("Taking damage!"));
 	}
 	LastHealth = CurrentHealth;
-
 
 	if (Health->GetHealth() < 8)
 	{
@@ -159,18 +178,5 @@ void AgentController::HandleItemUsage()
 				GEngine->AddOnScreenDebugMessage(20, 2.f, FColor::Orange, TEXT("Ate FOOD"));
 			}
 		}
-	}
-
-	if (bUnderAttack)
-	{
-		int Slot = FindItemOfType(Inventory, EItemType::Pistol);
-
-		if (Slot != -1)
-		{
-			Inventory->UseItem(Slot);
-			GEngine->AddOnScreenDebugMessage(22, 2.f, FColor::Yellow, TEXT("Shooting back attacker!"));
-		}
-
-		bUnderAttack = false;
 	}
 }

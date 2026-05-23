@@ -7,6 +7,7 @@
 #include "States/FleeState.h"
 #include "States/WanderState.h"
 #include "States/CollectState.h"
+#include "States/FightBackState.h"
 
 class ASurvivorPawn;
 
@@ -23,8 +24,7 @@ public:
 
 	int FindItemOfType(UInventoryComponent* Inventory, EItemType Type);
 	void HandleItemUsage();
-	void SetUnderAttack(bool bValue) { bUnderAttack = bValue; }
-	bool IsUnderAttack() const { return bUnderAttack; }
+
 private:
 	ASurvivorPawn* Pawn = nullptr;
 
@@ -34,7 +34,7 @@ private:
 	FleeState* Flee;
 	WanderState* Wander;
 	CollectState* Collect;
+	FightBackState* FightBack;
 
-	bool bUnderAttack = false;
 	int LastHealth = 10;
 };
