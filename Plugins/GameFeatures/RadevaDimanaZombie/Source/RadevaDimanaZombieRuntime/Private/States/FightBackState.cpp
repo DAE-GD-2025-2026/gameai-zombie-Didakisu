@@ -75,6 +75,8 @@ int FightBackState::FindItemOfType(UInventoryComponent* Inventory, EItemType Typ
 
 void FightBackState::Shoot()
 {
+    DrawDebugLine(Pawn->GetWorld(),  Pawn->GetActorLocation(), Pawn->GetActorLocation() + Pawn->GetActorForwardVector() * 1000.f, FColor::Red, false, 2.f, 0, 3.f);
+
     UInventoryComponent* Inventory = Pawn->GetComponentByClass<UInventoryComponent>();
     int Slot = -1;
 
@@ -86,6 +88,11 @@ void FightBackState::Shoot()
     if (Slot == -1)
     {
         Slot = FindItemOfType(Inventory, EItemType::Pistol);
+    }
+
+    if (Slot == -1)
+    {
+        Slot = FindItemOfType(Inventory, EItemType::Shotgun);
     }
 
     if (Slot != -1)

@@ -61,16 +61,6 @@ void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 			AgentController.GetMemory().RegisterHouse(Actor, Stimulus.StimulusLocation);
 		}
 	}
-
-	/*if (Stimulus.Type == UAISense::GetSenseID<UAISense_Damage>())
-	{
-		if (Stimulus.WasSuccessfullySensed())
-		{
-			AgentController.GetMemory().RegisterZombie(Actor, Stimulus.StimulusLocation);
-			AgentController.SetUnderAttack(true);
-			GEngine->AddOnScreenDebugMessage(23, 2.f, FColor::Red, TEXT("DAMAGE RECEIVED"));
-		}
-	}*/
 }
 
 void UStudentPerceptor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

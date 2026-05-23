@@ -24,7 +24,6 @@ public:
 
 	int FindItemOfType(UInventoryComponent* Inventory, EItemType Type);
 	void HandleItemUsage();
-
 private:
 	ASurvivorPawn* Pawn = nullptr;
 
@@ -36,5 +35,9 @@ private:
 	CollectState* Collect;
 	FightBackState* FightBack;
 
+	float AttackCooldown = 0.f;
+	float AttackCooldownDuration = 3.f;
+
+	bool bUnderAttack = false;
 	int LastHealth = 10;
 };

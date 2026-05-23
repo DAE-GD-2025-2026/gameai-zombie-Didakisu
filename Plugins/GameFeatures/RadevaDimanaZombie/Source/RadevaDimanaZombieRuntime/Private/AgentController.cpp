@@ -37,19 +37,34 @@ void AgentController::Initialize(ASurvivorPawn* InPawn)
 
 	//transitions
 
-	StateMachine.AddTransition(Wander, FightBack, [this]()
-	{
-		return Memory.GetZombies().Num() > 0 && FightBack->HasWeapon();
-	});
-
 	StateMachine.AddTransition(Wander, Flee, [this]()
 	{
-		return Memory.GetZombies().Num() > 0 && !FightBack->HasWeapon();
+		return (Memory.GetZombies().Num() > 0 || bUnderAttack) && !FightBack->HasWeapon();
+	});
+
+	StateMachine.AddTransition(Wander, FightBack, [this]()
+	{
+		return (Memory.GetZombies().Num() > 0 || bUnderAttack) && FightBack->HasWeapon();
+	});
+
+	StateMachine.AddTransition(Wander, Collect, [this]()
+	{
+		return Memory.GetItems().Num() > 0 && !Collect->IsInventoryFull();
+	});
+
+	StateMachine.AddTransition(Collect, Flee, [this]()
+	{
+		return (Memory.GetZombies().Num() > 0 || bUnderAttack) && !FightBack->HasWeapon();
+	});
+
+	StateMachine.AddTransition(Collect, FightBack, [this]()
+	{
+		return (Memory.GetZombies().Num() > 0 || bUnderAttack) && FightBack->HasWeapon();
 	});
 
 	StateMachine.AddTransition(FightBack, Wander, [this]()
 	{
-		return Memory.GetZombies().Num() == 0;
+		return Memory.GetZombies().Num() == 0 && !bUnderAttack;
 	});
 
 	StateMachine.AddTransition(FightBack, Flee, [this]()
@@ -59,12 +74,7 @@ void AgentController::Initialize(ASurvivorPawn* InPawn)
 
 	StateMachine.AddTransition(Flee, Wander, [this]()
 	{
-		return Memory.GetZombies().Num() == 0;
-	});
-
-	StateMachine.AddTransition(Wander, Collect, [this]()
-	{
-		return Memory.GetItems().Num() > 0 && !Collect->IsInventoryFull();
+		return Memory.GetZombies().Num() == 0 && !bUnderAttack;
 	});
 
 	StateMachine.AddTransition(Collect, Wander, [this]()
@@ -93,11 +103,22 @@ void AgentController::Update(float DeltaTime)
 	}
 
 	Memory.Update(DeltaTime);
-	StateMachine.Update(DeltaTime);
 	HandleItemUsage();
+	StateMachine.Update(DeltaTime);
+	bUnderAttack = false;
 
 	FVector Dir = Pawn->GetVelocity();
 	Dir.Z = 0.f;
+
+	if (AttackCooldown > 0.f)
+	{
+		AttackCooldown -= DeltaTime;
+		bUnderAttack = true;
+	}
+	else
+	{
+		bUnderAttack = false;
+	}
 
 	if (!Dir.IsNearlyZero())
 	{
@@ -145,7 +166,7 @@ void AgentController::HandleItemUsage()
 
 	if (CurrentHealth < LastHealth)
 	{
-		//bUnderAttack = true;
+		AttackCooldown = AttackCooldownDuration;
 		GEngine->AddOnScreenDebugMessage(23, 2.f, FColor::Red, TEXT("Taking damage!"));
 	}
 	LastHealth = CurrentHealth;
