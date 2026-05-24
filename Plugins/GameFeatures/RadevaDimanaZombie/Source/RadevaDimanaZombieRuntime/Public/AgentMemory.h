@@ -36,6 +36,8 @@ public:
 
 	void MarkHouseVisited(AActor* House);
 	bool IsHouseVisited(AActor* House) const;
+
+	int GetVisitedHousesCount() const { return VisitedHouses.Num(); }
 private:
 	TArray<FPerceivedTarget> Zombies;
 	TArray<FPerceivedTarget> Items;

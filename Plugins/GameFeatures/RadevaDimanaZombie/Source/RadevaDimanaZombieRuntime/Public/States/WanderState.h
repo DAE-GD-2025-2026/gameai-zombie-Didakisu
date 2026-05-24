@@ -25,7 +25,7 @@ private:
 	bool bHasTarget = false;
 
 	float AcceptanceRadius = 150.f;
-	float SearchRadius = 2000.f;
+	float SearchRadius = 4000.f;
 
 	bool bSeekingHouse = false;
 

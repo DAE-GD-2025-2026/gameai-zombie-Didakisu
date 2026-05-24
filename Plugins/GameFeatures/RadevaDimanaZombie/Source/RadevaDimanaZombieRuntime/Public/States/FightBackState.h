@@ -25,4 +25,7 @@ private:
 	AgentMemory* Memory = nullptr;
 
 	float SpinSpeed = 180.f;
+
+	float FireCooldown = 0.f;
+	float FireRate = 1.f;
 };

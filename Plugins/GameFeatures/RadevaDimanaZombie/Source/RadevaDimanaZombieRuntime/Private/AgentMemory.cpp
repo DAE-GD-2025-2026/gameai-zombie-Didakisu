@@ -1,4 +1,5 @@
 #include "AgentMemory.h"
+#include "Village/House/House.h"
 
 AgentMemory::AgentMemory()
 {
@@ -72,8 +73,16 @@ void AgentMemory::RegisterItem(AActor* Actor, FVector Location, FVector AgentLoc
 			continue;
 		}
 
-		FBox Bounds = Houses[h].Actor->GetComponentsBoundingBox();
-		if (Bounds.IsInsideOrOn(AgentLocation))
+		AHouse* House = Cast<AHouse>(Houses[h].Actor);
+		if (!House) continue;
+
+		FHouseBounds Bounds = House->GetBounds();
+		bool bInsideHouse = AgentLocation.X >= Bounds.Origin.X - Bounds.Extent.X &&
+			AgentLocation.X <= Bounds.Origin.X + Bounds.Extent.X &&
+			AgentLocation.Y >= Bounds.Origin.Y - Bounds.Extent.Y &&
+			AgentLocation.Y <= Bounds.Origin.Y + Bounds.Extent.Y;
+
+		if (bInsideHouse)
 		{
 			for (int i = 0; i < Items.Num(); i++)
 			{

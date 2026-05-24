@@ -2,6 +2,7 @@
 #include "Survivor/SurvivorPawn.h"
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
+#include "Village/House/House.h"
 
 WanderState::WanderState(ASurvivorPawn* InPawn, AgentMemory* InMemory)
 {
@@ -37,9 +38,17 @@ bool WanderState::IsInsideHouse(AActor* House) const
         return false;
     }
 
-	FBox Bounds = House->GetComponentsBoundingBox();
-	FVector PawnLoc = Pawn->GetActorLocation();
-	return PawnLoc.X >= Bounds.Min.X && PawnLoc.X <= Bounds.Max.X && PawnLoc.Y >= Bounds.Min.Y && PawnLoc.Y <= Bounds.Max.Y;
+    AHouse* HouseActor = Cast<AHouse>(House);
+    if (!HouseActor)
+    {
+        return false;
+    }
+
+    FHouseBounds Bounds = HouseActor->GetBounds();
+    FVector PawnLoc = Pawn->GetActorLocation();
+
+    return PawnLoc.X >= Bounds.Origin.X - Bounds.Extent.X && PawnLoc.X <= Bounds.Origin.X + Bounds.Extent.X &&
+           PawnLoc.Y >= Bounds.Origin.Y - Bounds.Extent.Y && PawnLoc.Y <= Bounds.Origin.Y + Bounds.Extent.Y;
 }
 
 void WanderState::BuildPathTo(FVector Target)
@@ -72,7 +81,7 @@ void WanderState::PickNewNavMeshTarget()
     if (Memory && Memory->GetHouses().Num() > 0)
     {
         AActor* ClosestHouse = Memory->GetClosestHouse(Pawn->GetActorLocation());
-        if (ClosestHouse && IsInsideHouse(ClosestHouse))
+        if (ClosestHouse && IsInsideHouse(ClosestHouse) && !Memory->IsHouseVisited(ClosestHouse))
         {
             FBox HouseBounds = ClosestHouse->GetComponentsBoundingBox();
             //try find a pont outside the house
@@ -92,6 +101,17 @@ void WanderState::PickNewNavMeshTarget()
                 }
             }
             GEngine->AddOnScreenDebugMessage(33, 0.f, FColor::Red, TEXT("Failed to find exit"));
+            return;
+        }
+    }
+
+    if (Memory)
+    {
+        AActor* UnvisitedHouse = Memory->GetClosestHouse(Pawn->GetActorLocation(), true);
+        if (UnvisitedHouse && !IsInsideHouse(UnvisitedHouse))
+        {
+            BuildPathTo(UnvisitedHouse->GetActorLocation());
+            GEngine->AddOnScreenDebugMessage(33, 2.f, FColor::Green, TEXT("Heading to unviited house"));
             return;
         }
     }

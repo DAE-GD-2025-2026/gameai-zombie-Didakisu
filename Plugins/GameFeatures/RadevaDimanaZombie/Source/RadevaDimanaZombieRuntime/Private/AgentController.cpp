@@ -69,7 +69,7 @@ void AgentController::Initialize(ASurvivorPawn* InPawn)
 
 	StateMachine.AddTransition(FightBack, Flee, [this]()
 	{
-		return Memory.GetZombies().Num() > 0 && !FightBack->HasWeapon();
+		return Memory.GetZombies().Num() > 0 && !FightBack->HasWeapon() && bUnderAttack;
 	});
 
 	StateMachine.AddTransition(Flee, Wander, [this]()
@@ -80,11 +80,6 @@ void AgentController::Initialize(ASurvivorPawn* InPawn)
 	StateMachine.AddTransition(Collect, Wander, [this]()
 	{
 		return Memory.GetItems().Num() == 0 || Collect->IsInventoryFull();
-	});
-
-	StateMachine.AddTransition(Collect, Flee, [this]()
-	{
-		return Memory.GetZombies().Num() > 0;
 	});
 
 	StateMachine.AddTransition(Flee, Collect, [this]()
@@ -133,6 +128,11 @@ void AgentController::Update(float DeltaTime)
 		FString::Printf(TEXT("Items: %d | Zombies: %d"),
 			Memory.GetItems().Num(),
 			Memory.GetZombies().Num()));
+
+	GEngine->AddOnScreenDebugMessage(11, 0.f, FColor::Yellow,
+		FString::Printf(TEXT("Houses: %d | Visited: %d"),
+			Memory.GetHouses().Num(),
+			Memory.GetVisitedHousesCount()));
 }
 
 int AgentController::FindItemOfType(UInventoryComponent* Inventory, EItemType Type)
@@ -186,7 +186,7 @@ void AgentController::HandleItemUsage()
 		}
 	}
 
-	if (Stamina->GetCurrentStamina() < 3.f)
+	if (Stamina->GetCurrentStamina() < 5.f)
 	{
 		int Slot = FindItemOfType(Inventory, EItemType::Food);
 

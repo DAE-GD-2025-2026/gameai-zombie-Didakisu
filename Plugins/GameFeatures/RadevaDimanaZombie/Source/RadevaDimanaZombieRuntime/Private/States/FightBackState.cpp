@@ -22,6 +22,8 @@ void FightBackState::OnExit()
 
 void FightBackState::Update(float DeltaTime)
 {
+    FireCooldown -= DeltaTime;
+
     if (Memory->GetZombies().Num() == 0)
     {
         Spin(DeltaTime);
@@ -29,7 +31,11 @@ void FightBackState::Update(float DeltaTime)
     else
     {
         FaceTarget(DeltaTime);
-        Shoot();
+        if (FireCooldown <= 0.f)
+        {
+            Shoot();
+            FireCooldown = FireRate;
+        }
     }
 }
 
