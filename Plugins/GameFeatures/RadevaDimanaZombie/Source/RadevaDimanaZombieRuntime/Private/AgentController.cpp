@@ -84,7 +84,7 @@ void AgentController::Initialize(ASurvivorPawn* InPawn)
 
 	StateMachine.AddTransition(Flee, Collect, [this]()
 	{
-		return Memory.GetZombies().Num() == 0 && Memory.GetItems().Num() > 0;
+		return Memory.GetZombies().Num() == 0 && Memory.GetItems().Num() > 0 && !bUnderAttack;
 	});
 
 	StateMachine.SetInitialState(Wander);

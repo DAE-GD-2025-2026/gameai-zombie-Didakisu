@@ -12,7 +12,7 @@ void AgentMemory::Update(float DeltaTime)
 
 	Zombies.RemoveAll([&](const FPerceivedTarget& Entry)
 	{
-		return (ElapsedTime - Entry.LastSeenTime) > ZombieForgetTime;
+		return !IsValid(Entry.Actor) || (ElapsedTime - Entry.LastSeenTime) > ZombieForgetTime;
 	});
 
 	Items.RemoveAll([&](const FPerceivedTarget& Entry)
@@ -74,7 +74,10 @@ void AgentMemory::RegisterItem(AActor* Actor, FVector Location, FVector AgentLoc
 		}
 
 		AHouse* House = Cast<AHouse>(Houses[h].Actor);
-		if (!House) continue;
+		if (!House)
+		{
+			continue;
+		}
 
 		FHouseBounds Bounds = House->GetBounds();
 		bool bInsideHouse = AgentLocation.X >= Bounds.Origin.X - Bounds.Extent.X &&
@@ -208,8 +211,8 @@ AActor* AgentMemory::GetClosestHouse(const FVector& FromLocation, bool bUnvisite
 		return nullptr;
 	}
 
-	int ClosestHouseIndex = 0;
-	float ClosestDistanceSquared = FVector::DistSquared(Houses[0].Location, FromLocation);
+	int ClosestHouseIndex = -1;
+	float ClosestDistanceSquared = TNumericLimits<float>::Max();
 
 	for (int i = 0; i < Houses.Num(); i++)
 	{
@@ -232,8 +235,12 @@ AActor* AgentMemory::GetClosestHouse(const FVector& FromLocation, bool bUnvisite
 		}
 	}
 
-	AActor* ClosestActor = Houses[ClosestHouseIndex].Actor;
+	if (ClosestHouseIndex == -1)
+	{
+		return nullptr;
+	}
 
+	AActor* ClosestActor = Houses[ClosestHouseIndex].Actor;
 	if (!IsValid(ClosestActor))
 	{
 		return nullptr;

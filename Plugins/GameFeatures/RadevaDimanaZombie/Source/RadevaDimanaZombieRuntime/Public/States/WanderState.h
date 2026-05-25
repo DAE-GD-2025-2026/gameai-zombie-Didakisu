@@ -32,4 +32,11 @@ private:
 	TArray<FVector> CurrentPath;
 	int32 CurrentPathIndex = 0;
 	float WaypointAcceptanceRadius = 50.f; //keep small so the pawn to be close enough before changing
+
+	float ExplorationRadius = 500.f;
+	float ExplorationRadiusStep = 500.f;
+	float MaxExplorationRadius = 4000.f;
+	float ExplorationAngle = 0.f;
+	FVector SpawnLocation;
+	bool bSpawnLocationSet = false;
 };

@@ -12,11 +12,16 @@ WanderState::WanderState(ASurvivorPawn* InPawn, AgentMemory* InMemory)
 
 void WanderState::OnEnter()
 {
-	if (Pawn)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("Entering Wander State"));
-		PickNewNavMeshTarget();
-	}
+    if (Pawn)
+    {
+        if (!bSpawnLocationSet)
+        {
+            SpawnLocation = Pawn->GetActorLocation();
+            bSpawnLocationSet = true;
+        }
+        GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("Entering Wander State"));
+        PickNewNavMeshTarget();
+    }
 }
 
 void WanderState::OnExit()
@@ -108,19 +113,25 @@ void WanderState::PickNewNavMeshTarget()
     if (Memory)
     {
         AActor* UnvisitedHouse = Memory->GetClosestHouse(Pawn->GetActorLocation(), true);
+
         if (UnvisitedHouse && !IsInsideHouse(UnvisitedHouse))
         {
-            BuildPathTo(UnvisitedHouse->GetActorLocation());
-            GEngine->AddOnScreenDebugMessage(33, 2.f, FColor::Green, TEXT("Heading to unviited house"));
-            return;
+            if (NavSystem->GetRandomReachablePointInRadius(UnvisitedHouse->GetActorLocation(), 300.f, Result))
+            {
+                BuildPathTo(Result.Location);
+                return;
+            }
         }
     }
 
-    //survivor is NOT inside a house, picks a random reacable point to wander to
-    if (NavSystem->GetRandomReachablePointInRadius(Pawn->GetActorLocation(), SearchRadius, Result))
+    FVector ExplorePoint = SpawnLocation + FVector(FMath::Cos(FMath::DegreesToRadians(ExplorationAngle)) * ExplorationRadius, FMath::Sin(FMath::DegreesToRadians(ExplorationAngle)) * ExplorationRadius, 0.f);
+
+    ExplorationAngle += 45.f;
+    ExplorationRadius = FMath::Min(ExplorationRadius + ExplorationRadiusStep, MaxExplorationRadius);
+
+    if (NavSystem->GetRandomReachablePointInRadius(ExplorePoint, 500.f, Result))
     {
         BuildPathTo(Result.Location);
-        GEngine->AddOnScreenDebugMessage(33, 2.f, FColor::Green, TEXT("Wander target found"));
     }
 }
 
