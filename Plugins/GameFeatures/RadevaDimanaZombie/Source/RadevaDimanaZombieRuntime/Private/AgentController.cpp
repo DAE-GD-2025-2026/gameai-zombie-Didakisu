@@ -20,8 +20,8 @@ void AgentController::Initialize(ASurvivorPawn* InPawn)
 		Movement->MaxSpeed = 750.f;
 	}
 
-	auto FleeStatePtr = std::make_unique<FleeState>(Pawn, &Memory);
 	auto WanderStatePtr = std::make_unique<WanderState>(Pawn, &Memory);
+	auto FleeStatePtr = std::make_unique<FleeState>(Pawn, &Memory, WanderStatePtr.get());
 	auto CollectStatePtr = std::make_unique<CollectState>(Pawn, &Memory);
 	auto FightBackStatePtr = std::make_unique<FightBackState>(Pawn, &Memory);
 
@@ -49,6 +49,12 @@ void AgentController::Initialize(ASurvivorPawn* InPawn)
 
 	StateMachine.AddTransition(Wander, Collect, [this]()
 	{
+		/*return Memory.GetItems().Num() > 0 && !Collect->IsInventoryFull();*/
+		UInventoryComponent* Inventory = Pawn->GetComponentByClass<UInventoryComponent>();
+		if (Inventory && Inventory->GetInventory().Num() < Inventory->GetInventoryCapacity())
+		{
+			Collect->ResetInventoryFull();
+		}
 		return Memory.GetItems().Num() > 0 && !Collect->IsInventoryFull();
 	});
 
@@ -87,6 +93,11 @@ void AgentController::Initialize(ASurvivorPawn* InPawn)
 		return Memory.GetZombies().Num() == 0 && Memory.GetItems().Num() > 0 && !bUnderAttack;
 	});
 
+	StateMachine.AddTransition(Flee, FightBack, [this]()
+	{
+		return FightBack->HasWeapon();
+	});
+
 	StateMachine.SetInitialState(Wander);
 }
 
@@ -100,6 +111,9 @@ void AgentController::Update(float DeltaTime)
 	Memory.Update(DeltaTime);
 	HandleItemUsage();
 	StateMachine.Update(DeltaTime);
+
+	TryCollectNearbyItem();
+
 	bUnderAttack = false;
 
 	FVector Dir = Pawn->GetVelocity();
@@ -199,5 +213,41 @@ void AgentController::HandleItemUsage()
 				GEngine->AddOnScreenDebugMessage(20, 2.f, FColor::Orange, TEXT("Ate FOOD"));
 			}
 		}
+	}
+}
+
+void AgentController::TryCollectNearbyItem()
+{
+	const TArray<FPerceivedTarget>& KnownItems = Memory.GetItems();
+
+	for (const FPerceivedTarget& Entry : KnownItems)
+	{
+		ABaseItem* Item = Cast<ABaseItem>(Entry.Actor);
+		if (!Item || !IsValid(Item))
+		{
+			continue;
+		}
+
+		float Dist = FVector::Dist2D(Pawn->GetActorLocation(), Item->GetActorLocation());
+		if (Dist > 100.f)
+		{
+			continue;
+		}
+
+		UInventoryComponent* Inventory = Pawn->GetComponentByClass<UInventoryComponent>();
+		if (!Inventory)
+		{
+			continue;
+		}
+
+		for (int i = 0; i < Inventory->GetInventoryCapacity(); i++)
+		{
+			if (Inventory->GrabItem(i, Item))
+			{
+				Memory.UnregisterItem(Item);
+				break;
+			}
+		}
+		break;
 	}
 }

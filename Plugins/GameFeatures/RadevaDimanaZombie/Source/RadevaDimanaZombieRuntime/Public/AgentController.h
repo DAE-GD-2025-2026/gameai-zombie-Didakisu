@@ -24,6 +24,7 @@ public:
 
 	int FindItemOfType(UInventoryComponent* Inventory, EItemType Type);
 	void HandleItemUsage();
+	void TryCollectNearbyItem();
 private:
 	ASurvivorPawn* Pawn = nullptr;
 

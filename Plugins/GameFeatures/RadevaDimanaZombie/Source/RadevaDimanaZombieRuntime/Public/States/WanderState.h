@@ -14,6 +14,7 @@ public:
 	void Update(float DeltaTime) override;
 
 	bool IsInsideHouse(AActor* House) const;
+	FVector GetCurrentSpiralPoint() const;
 private:
 	void PickNewNavMeshTarget();
 	void BuildPathTo(FVector Target);

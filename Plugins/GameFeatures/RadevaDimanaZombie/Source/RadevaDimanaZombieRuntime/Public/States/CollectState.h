@@ -16,6 +16,7 @@ public:
 	void Update(float DeltaTime) override;
 
 	bool IsInventoryFull() const { return bInventoryFull; }
+	void ResetInventoryFull() { bInventoryFull = false; }
 private:
 	void UpdateToTarget();
 	void MoveToTarget();

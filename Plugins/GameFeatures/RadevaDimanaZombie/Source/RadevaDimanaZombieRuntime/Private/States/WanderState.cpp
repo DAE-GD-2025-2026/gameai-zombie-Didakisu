@@ -56,6 +56,11 @@ bool WanderState::IsInsideHouse(AActor* House) const
            PawnLoc.Y >= Bounds.Origin.Y - Bounds.Extent.Y && PawnLoc.Y <= Bounds.Origin.Y + Bounds.Extent.Y;
 }
 
+FVector WanderState::GetCurrentSpiralPoint() const
+{
+    return SpawnLocation + FVector(FMath::Cos(FMath::DegreesToRadians(ExplorationAngle)) * ExplorationRadius, FMath::Sin(FMath::DegreesToRadians(ExplorationAngle)) * ExplorationRadius, 0.f);
+}
+
 void WanderState::BuildPathTo(FVector Target)
 {
     NavTarget = Target;
@@ -157,12 +162,13 @@ void WanderState::Update(float DeltaTime)
 
             if (bInside && !bVisited)
             {
-                //entered the closest house, mark visited
-                Memory->MarkHouseVisited(ClosestHouse);
-                bSeekingHouse = false;
-                //bHasTarget = false;
-                CurrentPath.Empty();
-                CurrentPathIndex = 0;
+                if (Memory->GetItems().Num() == 0)
+                {
+                    Memory->MarkHouseVisited(ClosestHouse);
+                    bSeekingHouse = false;
+                    CurrentPath.Empty();
+                    CurrentPathIndex = 0;
+                }
             }
             else if (!bInside && !bVisited && !bSeekingHouse) 
             {

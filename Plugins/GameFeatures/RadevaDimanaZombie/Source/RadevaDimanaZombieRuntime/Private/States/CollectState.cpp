@@ -81,8 +81,22 @@ void CollectState::TryPickUp()
 
 	if (!bPickedUp)
 	{
+		bool bAllSlotsFull = true;
+		for (int i = 0; i < Inventory->GetInventoryCapacity(); i++)
+		{
+			if (!Inventory->GetInventory()[i]) 
+			{
+				bAllSlotsFull = false;
+				break;
+			}
+		}
+
 		Memory->UnregisterItem(TargetItem);
 		TargetItem = nullptr;
-		bInventoryFull = true;
+
+		if (bAllSlotsFull)
+		{
+			bInventoryFull = true;
+		}
 	}
 }
