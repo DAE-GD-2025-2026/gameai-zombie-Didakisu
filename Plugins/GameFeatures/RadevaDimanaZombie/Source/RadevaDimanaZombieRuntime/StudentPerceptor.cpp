@@ -6,6 +6,7 @@
 #include "Village/House/House.h"
 #include "GameFramework/SpectatorPawn.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "PurgeZones/PurgeZone.h"
 
 UStudentPerceptor::UStudentPerceptor()
 {
@@ -59,6 +60,15 @@ void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 		if (Stimulus.WasSuccessfullySensed())
 		{
 			AgentController.GetMemory().RegisterHouse(Actor, Stimulus.StimulusLocation);
+		}
+	}
+
+	if (Cast<APurgeZone>(Actor))
+	{
+		if (Stimulus.WasSuccessfullySensed())
+		{
+			AgentController.GetMemory().RegisterPurgeZone(Actor, Stimulus.StimulusLocation);
+			GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Red, TEXT("A PURGE ZONE!"));
 		}
 	}
 }

@@ -24,6 +24,11 @@ void AgentMemory::Update(float DeltaTime)
 	{
 		return !IsValid(Entry.Actor);
 	});
+
+	PurgeZones.RemoveAll([&](const FPerceivedTarget& Entry)
+	{
+		return !IsValid(Entry.Actor);
+	});
 }
 
 void AgentMemory::RegisterZombie(AActor* Actor, FVector Location/*, float CurrentTime*/)
@@ -131,6 +136,31 @@ void AgentMemory::RegisterHouse(AActor * Actor, FVector Location)
 	Houses.Add(NewEntry);
 }
 
+void AgentMemory::RegisterPurgeZone(AActor* Actor, FVector Location)
+{
+	if (!Actor)
+	{
+		return;
+	}
+
+	for (int i = 0; i < PurgeZones.Num(); i++)
+	{
+		if (PurgeZones[i].Actor == Actor)
+		{
+			PurgeZones[i].Location = Location;
+			PurgeZones[i].LastSeenTime = ElapsedTime;
+			return;
+		}
+	}
+
+	FPerceivedTarget NewEntry;
+	NewEntry.Actor = Actor;
+	NewEntry.Location = Location;
+	NewEntry.LastSeenTime = ElapsedTime;
+
+	PurgeZones.Add(NewEntry);
+}
+
 void AgentMemory::UnregisterZombie(AActor* Actor)
 {
 	if (!Actor)
@@ -178,6 +208,11 @@ const TArray<FPerceivedTarget>& AgentMemory::GetItems() const
 const TArray<FPerceivedTarget>& AgentMemory::GetHouses() const
 {
 	return Houses;
+}
+
+const TArray<FPerceivedTarget>& AgentMemory::GetPurgeZones() const
+{
+	return PurgeZones;
 }
 
 FVector AgentMemory::GetClosestZombieLocation(const FVector& FromLocation) const

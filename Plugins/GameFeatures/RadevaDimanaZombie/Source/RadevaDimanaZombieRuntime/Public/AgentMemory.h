@@ -21,6 +21,7 @@ public:
 	void RegisterZombie(AActor* Actor, FVector Location/*, float CurrentTime*/);
 	void RegisterItem(AActor* Actor, FVector Location, FVector AgentLocation);
 	void RegisterHouse(AActor* Actor, FVector Location);
+	void RegisterPurgeZone(AActor* Actor, FVector Location);
 
 	void UnregisterZombie(AActor* Actor);
 	void UnregisterItem(ABaseItem* Item);
@@ -28,6 +29,7 @@ public:
 	const TArray<FPerceivedTarget>& GetZombies() const;
 	const TArray<FPerceivedTarget>& GetItems() const;
 	const TArray<FPerceivedTarget>& GetHouses() const;
+	const TArray<FPerceivedTarget>& GetPurgeZones() const;
 
 	FVector GetClosestZombieLocation(const FVector& FromLocation) const;
 	AActor* GetClosestHouse(const FVector& FromLocation, bool bUnvisitedOnly = false) const;
@@ -42,6 +44,7 @@ private:
 	TArray<FPerceivedTarget> Zombies;
 	TArray<FPerceivedTarget> Items;
 	TArray<FPerceivedTarget> Houses;
+	TArray<FPerceivedTarget> PurgeZones;
 
 	float ElapsedTime = 0.f;
 	float ZombieForgetTime = 3.f;
