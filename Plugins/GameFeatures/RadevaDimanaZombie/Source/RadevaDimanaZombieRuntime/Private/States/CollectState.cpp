@@ -44,7 +44,7 @@ void CollectState::MoveToTarget()
 	}
 
 	FVector Direction = SeekBehavior.CalculateSteering(Pawn, TargetItem->GetActorLocation());
-	Pawn->AddMovementInput(Direction, 0.3f);
+	Pawn->AddMovementInput(Direction, 0.5f);
 }
 
 void CollectState::TryPickUp()
