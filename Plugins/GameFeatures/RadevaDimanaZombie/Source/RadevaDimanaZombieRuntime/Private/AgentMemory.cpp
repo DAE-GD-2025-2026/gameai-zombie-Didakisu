@@ -57,6 +57,7 @@ void AgentMemory::RegisterZombie(AActor* Actor, FVector Location/*, float Curren
 	Zombies.Add(NewEntry);
 }
 
+
 void AgentMemory::RegisterItem(AActor* Actor, FVector Location, FVector AgentLocation)
 {
 	if (!Actor || Actor->IsHidden())
@@ -65,51 +66,27 @@ void AgentMemory::RegisterItem(AActor* Actor, FVector Location, FVector AgentLoc
 	}
 
 	ABaseItem* Item = Cast<ABaseItem>(Actor);
+
 	if (!Item || Item->GetItemType() == EItemType::Garbage)
 	{
 		return;
 	}
 
-	//register the item only when the survivor is in the house
-	for (int h = 0; h < Houses.Num(); h++)
+	for (int i = 0; i < Items.Num(); i++)
 	{
-		if (!IsValid(Houses[h].Actor))
+		if (Items[i].Actor == Actor)
 		{
-			continue;
-		}
-
-		AHouse* House = Cast<AHouse>(Houses[h].Actor);
-		if (!House)
-		{
-			continue;
-		}
-
-		FHouseBounds Bounds = House->GetBounds();
-		bool bInsideHouse = AgentLocation.X >= Bounds.Origin.X - Bounds.Extent.X &&
-			AgentLocation.X <= Bounds.Origin.X + Bounds.Extent.X &&
-			AgentLocation.Y >= Bounds.Origin.Y - Bounds.Extent.Y &&
-			AgentLocation.Y <= Bounds.Origin.Y + Bounds.Extent.Y;
-
-		if (bInsideHouse)
-		{
-			for (int i = 0; i < Items.Num(); i++)
-			{
-				if (Items[i].Actor == Actor)
-				{
-					Items[i].Location = Location;
-					Items[i].LastSeenTime = ElapsedTime;
-					return;
-				}
-			}
-
-			FPerceivedTarget NewEntry;
-			NewEntry.Actor = Actor;
-			NewEntry.Location = Location;
-			NewEntry.LastSeenTime = ElapsedTime;
-			Items.Add(NewEntry);
+			Items[i].Location = Location;
+			Items[i].LastSeenTime = ElapsedTime;
 			return;
 		}
 	}
+
+	FPerceivedTarget NewEntry;
+	NewEntry.Actor = Actor;
+	NewEntry.Location = Location;
+	NewEntry.LastSeenTime = ElapsedTime;
+	Items.Add(NewEntry);
 }
 
 void AgentMemory::RegisterHouse(AActor * Actor, FVector Location)

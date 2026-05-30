@@ -2,19 +2,22 @@
 #include "../AgentFSM.h"
 #include "../AgentMemory.h"
 #include "SteeringBehaviors.h"
+#include "States/CollectState.h"
 
 class ASurvivorPawn;
 
 class WanderState : public State
 {
 public:
-	WanderState(ASurvivorPawn* InPawn, AgentMemory* InMemory);
+	WanderState(ASurvivorPawn* InPawn, AgentMemory* InMemory, CollectState* InCollect);
 	void OnEnter() override;
 	void OnExit() override;
 	void Update(float DeltaTime) override;
 
 	bool IsInsideHouse(AActor* House) const;
 	FVector GetCurrentSpiralPoint() const;
+
+	void AdvanceSpiral();
 private:
 	void PickNewNavMeshTarget();
 	void BuildPathTo(FVector Target);
@@ -25,7 +28,7 @@ private:
 	FVector NavTarget = FVector::ZeroVector;
 	bool bHasTarget = false;
 
-	float AcceptanceRadius = 150.f;
+	float AcceptanceRadius = 100.f; //150.f
 	float SearchRadius = 4000.f;
 
 	bool bSeekingHouse = false;
@@ -40,4 +43,7 @@ private:
 	float ExplorationAngle = 0.f;
 	FVector SpawnLocation;
 	bool bSpawnLocationSet = false;
+
+	CollectState* Collect = nullptr;
+	bool bJustEnteredHouse = false;
 };

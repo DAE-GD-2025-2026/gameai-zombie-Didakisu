@@ -20,9 +20,10 @@ void AgentController::Initialize(ASurvivorPawn* InPawn)
 		Movement->MaxSpeed = 750.f;
 	}
 
-	auto WanderStatePtr = std::make_unique<WanderState>(Pawn, &Memory);
-	auto FleeStatePtr = std::make_unique<FleeState>(Pawn, &Memory, WanderStatePtr.get());
+	//auto WanderStatePtr = std::make_unique<WanderState>(Pawn, &Memory);
 	auto CollectStatePtr = std::make_unique<CollectState>(Pawn, &Memory);
+	auto WanderStatePtr = std::make_unique<WanderState>(Pawn, &Memory , CollectStatePtr.get());
+	auto FleeStatePtr = std::make_unique<FleeState>(Pawn, &Memory, WanderStatePtr.get());
 	auto FightBackStatePtr = std::make_unique<FightBackState>(Pawn, &Memory);
 
 	Flee = FleeStatePtr.get();
@@ -49,11 +50,22 @@ void AgentController::Initialize(ASurvivorPawn* InPawn)
 
 	StateMachine.AddTransition(Wander, Collect, [this]()
 	{
-		/*return Memory.GetItems().Num() > 0 && !Collect->IsInventoryFull();*/
 		UInventoryComponent* Inventory = Pawn->GetComponentByClass<UInventoryComponent>();
-		if (Inventory && Inventory->GetInventory().Num() < Inventory->GetInventoryCapacity())
+		if (Inventory)
 		{
-			Collect->ResetInventoryFull();
+			int OccupiedSlots = 0;
+
+			for (int i = 0; i < Inventory->GetInventory().Num(); i++)
+			{
+				if (Inventory->GetInventory()[i] != nullptr)
+				{
+					OccupiedSlots++;
+				}
+			}
+			if (OccupiedSlots < Inventory->GetInventoryCapacity())
+			{
+				Collect->ResetInventoryFull();
+			}
 		}
 		return Memory.GetItems().Num() > 0 && !Collect->IsInventoryFull();
 	});
@@ -106,6 +118,24 @@ void AgentController::Update(float DeltaTime)
 	if (!Pawn)
 	{
 		return;
+	}
+
+	UInventoryComponent* Inventory = Pawn->GetComponentByClass<UInventoryComponent>();
+	if (Inventory)
+	{
+		int OccupiedSlots = 0;
+
+		for (int i = 0; i < Inventory->GetInventory().Num(); i++)
+		{
+			if (Inventory->GetInventory()[i] != nullptr)
+			{
+				OccupiedSlots++;
+			}
+		}
+		if (OccupiedSlots < Inventory->GetInventoryCapacity())
+		{
+			Collect->ResetInventoryFull();
+		}
 	}
 
 	Memory.Update(DeltaTime);
@@ -195,6 +225,7 @@ void AgentController::HandleItemUsage()
 			if (bUsed)
 			{
 				Inventory->RemoveItem(Slot);
+				Collect->ResetInventoryFull();
 				GEngine->AddOnScreenDebugMessage(20, 2.f, FColor::Magenta, TEXT("Used Medkit!"));
 			}
 		}
@@ -210,6 +241,7 @@ void AgentController::HandleItemUsage()
 			if (bUsed)
 			{
 				Inventory->RemoveItem(Slot);
+				Collect->ResetInventoryFull();
 				GEngine->AddOnScreenDebugMessage(20, 2.f, FColor::Orange, TEXT("Ate FOOD"));
 			}
 		}

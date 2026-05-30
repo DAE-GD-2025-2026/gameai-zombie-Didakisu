@@ -3,11 +3,13 @@
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
 #include "Village/House/House.h"
+#include "Common/InventoryComponent.h"
 
-WanderState::WanderState(ASurvivorPawn* InPawn, AgentMemory* InMemory)
+WanderState::WanderState(ASurvivorPawn* InPawn, AgentMemory* InMemory, CollectState* InCollect)
 {
 	Pawn = InPawn;
 	Memory = InMemory;
+    Collect = InCollect;
 }
 
 void WanderState::OnEnter()
@@ -61,6 +63,12 @@ FVector WanderState::GetCurrentSpiralPoint() const
     return SpawnLocation + FVector(FMath::Cos(FMath::DegreesToRadians(ExplorationAngle)) * ExplorationRadius, FMath::Sin(FMath::DegreesToRadians(ExplorationAngle)) * ExplorationRadius, 0.f);
 }
 
+void WanderState::AdvanceSpiral()
+{
+    ExplorationAngle += 45.f;
+    ExplorationRadius = FMath::Min(ExplorationRadius + ExplorationRadiusStep, MaxExplorationRadius);
+}
+
 void WanderState::BuildPathTo(FVector Target)
 {
     NavTarget = Target;
@@ -91,7 +99,7 @@ void WanderState::PickNewNavMeshTarget()
     if (Memory && Memory->GetHouses().Num() > 0)
     {
         AActor* ClosestHouse = Memory->GetClosestHouse(Pawn->GetActorLocation());
-        if (ClosestHouse && IsInsideHouse(ClosestHouse) && !Memory->IsHouseVisited(ClosestHouse))
+        if (ClosestHouse && IsInsideHouse(ClosestHouse) && !Memory->IsHouseVisited(ClosestHouse) && !Collect->IsInventoryFull())
         {
             FBox HouseBounds = ClosestHouse->GetComponentsBoundingBox();
             //try find a pont outside the house
@@ -119,7 +127,7 @@ void WanderState::PickNewNavMeshTarget()
     {
         AActor* UnvisitedHouse = Memory->GetClosestHouse(Pawn->GetActorLocation(), true);
 
-        if (UnvisitedHouse && !IsInsideHouse(UnvisitedHouse))
+        if (UnvisitedHouse && !IsInsideHouse(UnvisitedHouse) && !Collect->IsInventoryFull())
         {
             if (NavSystem->GetRandomReachablePointInRadius(UnvisitedHouse->GetActorLocation(), 300.f, Result))
             {
@@ -130,9 +138,7 @@ void WanderState::PickNewNavMeshTarget()
     }
 
     FVector ExplorePoint = SpawnLocation + FVector(FMath::Cos(FMath::DegreesToRadians(ExplorationAngle)) * ExplorationRadius, FMath::Sin(FMath::DegreesToRadians(ExplorationAngle)) * ExplorationRadius, 0.f);
-
-    ExplorationAngle += 45.f;
-    ExplorationRadius = FMath::Min(ExplorationRadius + ExplorationRadiusStep, MaxExplorationRadius);
+    AdvanceSpiral();
 
     if (NavSystem->GetRandomReachablePointInRadius(ExplorePoint, 500.f, Result))
     {
@@ -162,15 +168,16 @@ void WanderState::Update(float DeltaTime)
 
             if (bInside && !bVisited)
             {
-                if (Memory->GetItems().Num() == 0)
+                if (!Collect->IsInventoryFull())
                 {
                     Memory->MarkHouseVisited(ClosestHouse);
-                    bSeekingHouse = false;
-                    CurrentPath.Empty();
-                    CurrentPathIndex = 0;
                 }
+                bSeekingHouse = false;
+                CurrentPath.Empty();
+                CurrentPathIndex = 0;
+                bHasTarget = false;
             }
-            else if (!bInside && !bVisited && !bSeekingHouse) 
+            else if (!bInside && !bVisited && !bSeekingHouse && !Collect->IsInventoryFull())
             {
                 UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(Pawn->GetWorld());
                 if (NavSystem)
