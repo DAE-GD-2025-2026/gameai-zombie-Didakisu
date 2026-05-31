@@ -64,25 +64,25 @@ void CollectState::UpdateToTarget()
 		return;
 	}
 
-	FVector Loc = Pawn->GetActorLocation();
+	FVector CurrentPosition = Pawn->GetActorLocation();
 
 	if (!bHasWeapon)
 	{
-		TargetItem = Memory->GetClosestItemOfType(Loc, EItemType::Shotgun);
+		TargetItem = Memory->GetClosestItemOfType(CurrentPosition, EItemType::Shotgun);
 		if (!TargetItem)
 		{
-			TargetItem = Memory->GetClosestItemOfType(Loc, EItemType::Pistol);
+			TargetItem = Memory->GetClosestItemOfType(CurrentPosition, EItemType::Pistol);
 		}
 	}
 
 	if (!TargetItem && bLowHealth)
 	{
-		TargetItem = Memory->GetClosestItemOfType(Loc, EItemType::Medkit);
+		TargetItem = Memory->GetClosestItemOfType(CurrentPosition, EItemType::Medkit);
 	}
 
 	if (!TargetItem)
 	{
-		TargetItem = Memory->GetClosestItem(Loc);
+		TargetItem = Memory->GetClosestItem(CurrentPosition);
 	}
 }
 
