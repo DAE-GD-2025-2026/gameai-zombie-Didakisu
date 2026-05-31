@@ -28,8 +28,6 @@ void UStudentPerceptor::BeginPlay()
 
 void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
-	//GEngine->AddOnScreenDebugMessage(24, 1.f, FColor::White, FString::Printf(TEXT("Perception updated! Type: %d"), Stimulus.Type.Index));
-
 	float CurrentTime = GetWorld()->GetTimeSeconds();
 
 	if (Cast<ABaseZombie>(Actor))
@@ -43,7 +41,6 @@ void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 			AgentController.GetMemory().RegisterZombie(Actor, Stimulus.StimulusLocation/*, CurrentTime*/);
 		}
 		//zombies get cleaned when the ForgetTime completes
-
 	}
 
 	if (Cast<ABaseItem>(Actor))
@@ -68,7 +65,6 @@ void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 		if (Stimulus.WasSuccessfullySensed())
 		{
 			AgentController.GetMemory().RegisterPurgeZone(Actor, Stimulus.StimulusLocation);
-			GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Red, TEXT("A PURGE ZONE!"));
 		}
 	}
 }
@@ -76,8 +72,6 @@ void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 void UStudentPerceptor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	//GEngine->AddOnScreenDebugMessage(25, 0.f, FColor::White, FString::Printf(TEXT("Damage Sense ID: %d"), UAISense::GetSenseID<UAISense_Damage>().Index));
 
 	ASurvivorPawn* Pawn = Cast<ASurvivorPawn>(GetOwner());
 	if (!Pawn)
