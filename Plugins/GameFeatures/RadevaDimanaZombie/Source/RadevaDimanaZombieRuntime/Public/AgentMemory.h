@@ -18,7 +18,7 @@ public:
 	AgentMemory();
 	void Update(float DeltaTime);
 
-	void RegisterZombie(AActor* Actor, FVector Location/*, float CurrentTime*/);
+	void RegisterZombie(AActor* Actor, FVector Location);
 	void RegisterItem(AActor* Actor, FVector Location, FVector AgentLocation);
 	void RegisterHouse(AActor* Actor, FVector Location);
 	void RegisterPurgeZone(AActor* Actor, FVector Location);
@@ -34,7 +34,7 @@ public:
 	FVector GetClosestZombieLocation(const FVector& FromLocation) const;
 	AActor* GetClosestHouse(const FVector& FromLocation, bool bUnvisitedOnly = false) const;
 	ABaseItem* GetClosestItem(const FVector& FromLocation) const;
-	void SetForgetTime(float NewForgetTime) {}
+	ABaseItem* GetClosestItemOfType(const FVector& FromLocation, EItemType Type) const;
 
 	void MarkHouseVisited(AActor* House);
 	bool IsHouseVisited(AActor* House) const;

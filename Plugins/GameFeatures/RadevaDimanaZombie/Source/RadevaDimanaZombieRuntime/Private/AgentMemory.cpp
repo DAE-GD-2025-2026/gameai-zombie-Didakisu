@@ -31,7 +31,7 @@ void AgentMemory::Update(float DeltaTime)
 	});
 }
 
-void AgentMemory::RegisterZombie(AActor* Actor, FVector Location/*, float CurrentTime*/)
+void AgentMemory::RegisterZombie(AActor* Actor, FVector Location)
 {
 	if (!Actor)
 	{
@@ -289,6 +289,35 @@ ABaseItem* AgentMemory::GetClosestItem(const FVector& FromLocation) const
 	}
 
 	return Item;
+}
+
+ABaseItem* AgentMemory::GetClosestItemOfType(const FVector& FromLocation, EItemType Type) const
+{
+	int ClosestIndex = -1;
+	float ClosestDistanceSquared = TNumericLimits<float>::Max();
+
+	for (int i = 0; i < Items.Num(); i++)
+	{
+		ABaseItem* Item = Cast<ABaseItem>(Items[i].Actor);
+		if (!Item || !IsValid(Item) || Item->GetItemType() != Type)
+		{
+			continue;
+		}
+			
+		float Dist = FVector::DistSquared(Items[i].Location, FromLocation);
+		if (Dist < ClosestDistanceSquared)
+		{
+			ClosestDistanceSquared = Dist;
+			ClosestIndex = i;
+		}
+	}
+
+	if (ClosestIndex == -1)
+	{
+		return nullptr;
+	}
+
+	return Cast<ABaseItem>(Items[ClosestIndex].Actor);
 }
 
 void AgentMemory::MarkHouseVisited(AActor* House)

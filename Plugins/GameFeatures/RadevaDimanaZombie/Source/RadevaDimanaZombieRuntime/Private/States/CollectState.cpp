@@ -11,7 +11,7 @@ CollectState::CollectState(ASurvivorPawn* InPawn, AgentMemory* InMemory)
 void CollectState::OnEnter()
 {
 	bInventoryFull = false;
-	TargetItem = Memory->GetClosestItem(Pawn->GetActorLocation());
+	UpdateToTarget();
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, TEXT("Entering Collect State"));
 }
 
@@ -30,9 +30,59 @@ void CollectState::Update(float DeltaTime)
 
 void CollectState::UpdateToTarget()
 {
-	if ((!TargetItem || !IsValid(TargetItem)) && Memory->GetItems().Num() > 0)
+	UInventoryComponent* Inventory = Pawn->GetComponentByClass<UInventoryComponent>();
+	bool bHasWeapon = false;
+	if (Inventory)
 	{
-		TargetItem = Memory->GetClosestItem(Pawn->GetActorLocation());
+		for (int i = 0; i < Inventory->GetInventory().Num(); i++)
+		{
+			ABaseItem* Item = Inventory->GetInventory()[i];
+			if (Item && (Item->GetItemType() == EItemType::Shotgun || Item->GetItemType() == EItemType::Pistol))
+			{
+				bHasWeapon = true;
+				break;
+			}
+		}
+	}
+
+	UHealthComponent* Health = Pawn->GetComponentByClass<UHealthComponent>();
+
+	bool bLowHealth = false;
+	if (Health)
+	{
+		float HealthPercent = Health->GetHealth() / (float)Health->GetMaxHealth();
+		bLowHealth = HealthPercent < 0.3f;
+	}
+
+	if (TargetItem && IsValid(TargetItem))
+	{
+		return;
+	}
+
+	if (Memory->GetItems().Num() == 0)
+	{
+		return;
+	}
+
+	FVector Loc = Pawn->GetActorLocation();
+
+	if (!bHasWeapon)
+	{
+		TargetItem = Memory->GetClosestItemOfType(Loc, EItemType::Shotgun);
+		if (!TargetItem)
+		{
+			TargetItem = Memory->GetClosestItemOfType(Loc, EItemType::Pistol);
+		}
+	}
+
+	if (!TargetItem && bLowHealth)
+	{
+		TargetItem = Memory->GetClosestItemOfType(Loc, EItemType::Medkit);
+	}
+
+	if (!TargetItem)
+	{
+		TargetItem = Memory->GetClosestItem(Loc);
 	}
 }
 
