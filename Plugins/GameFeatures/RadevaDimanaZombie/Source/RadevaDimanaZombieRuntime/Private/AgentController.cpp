@@ -20,10 +20,9 @@ void AgentController::Initialize(ASurvivorPawn* InPawn)
 		Movement->MaxSpeed = 750.f;
 	}
 
-	//auto WanderStatePtr = std::make_unique<WanderState>(Pawn, &Memory);
 	auto CollectStatePtr = std::make_unique<CollectState>(Pawn, &Memory);
 	auto WanderStatePtr = std::make_unique<WanderState>(Pawn, &Memory , CollectStatePtr.get());
-	auto FleeStatePtr = std::make_unique<FleeState>(Pawn, &Memory, WanderStatePtr.get());
+	auto FleeStatePtr = std::make_unique<FleeState>(Pawn, &Memory, WanderStatePtr.get(), CollectStatePtr.get());
 	auto FightBackStatePtr = std::make_unique<FightBackState>(Pawn, &Memory);
 
 	Flee = FleeStatePtr.get();
@@ -142,8 +141,6 @@ void AgentController::Update(float DeltaTime)
 	HandleItemUsage();
 	StateMachine.Update(DeltaTime);
 
-	TryCollectNearbyItem();
-
 	bUnderAttack = false;
 
 	FVector Dir = Pawn->GetVelocity();
@@ -215,7 +212,7 @@ void AgentController::HandleItemUsage()
 	}
 	LastHealth = CurrentHealth;
 
-	if (Health->GetHealth() < 8)
+	if (Health->GetHealth() < 5)
 	{
 		int Slot = FindItemOfType(Inventory, EItemType::Medkit);
 		
@@ -245,41 +242,5 @@ void AgentController::HandleItemUsage()
 				GEngine->AddOnScreenDebugMessage(20, 2.f, FColor::Orange, TEXT("Ate FOOD"));
 			}
 		}
-	}
-}
-
-void AgentController::TryCollectNearbyItem()
-{
-	const TArray<FPerceivedTarget>& KnownItems = Memory.GetItems();
-
-	for (const FPerceivedTarget& Entry : KnownItems)
-	{
-		ABaseItem* Item = Cast<ABaseItem>(Entry.Actor);
-		if (!Item || !IsValid(Item))
-		{
-			continue;
-		}
-
-		float Dist = FVector::Dist2D(Pawn->GetActorLocation(), Item->GetActorLocation());
-		if (Dist > 100.f)
-		{
-			continue;
-		}
-
-		UInventoryComponent* Inventory = Pawn->GetComponentByClass<UInventoryComponent>();
-		if (!Inventory)
-		{
-			continue;
-		}
-
-		for (int i = 0; i < Inventory->GetInventoryCapacity(); i++)
-		{
-			if (Inventory->GrabItem(i, Item))
-			{
-				Memory.UnregisterItem(Item);
-				break;
-			}
-		}
-		break;
 	}
 }

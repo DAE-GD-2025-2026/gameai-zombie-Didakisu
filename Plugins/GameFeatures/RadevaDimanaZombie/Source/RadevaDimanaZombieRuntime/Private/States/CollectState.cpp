@@ -51,7 +51,7 @@ void CollectState::UpdateToTarget()
 	if (Health)
 	{
 		float HealthPercent = Health->GetHealth() / (float)Health->GetMaxHealth();
-		bLowHealth = HealthPercent < 0.3f;
+		bLowHealth = HealthPercent < 0.5f;
 	}
 
 	if (TargetItem && IsValid(TargetItem))

@@ -95,14 +95,12 @@ void WanderState::PickNewNavMeshTarget()
 
     FNavLocation Result;
 
-    //if survivor is inside a house find a point to exit
     if (Memory && Memory->GetHouses().Num() > 0)
     {
         AActor* ClosestHouse = Memory->GetClosestHouse(Pawn->GetActorLocation());
-        if (ClosestHouse && IsInsideHouse(ClosestHouse) && !Memory->IsHouseVisited(ClosestHouse) && !Collect->IsInventoryFull())
+        if (ClosestHouse && IsInsideHouse(ClosestHouse) && !Memory->IsHouseVisited(ClosestHouse))
         {
             FBox HouseBounds = ClosestHouse->GetComponentsBoundingBox();
-            //try find a pont outside the house
             for (int i = 0; i < 20; i++)
             {
                 if (NavSystem->GetRandomReachablePointInRadius(Pawn->GetActorLocation(), SearchRadius, Result))
@@ -171,11 +169,11 @@ void WanderState::Update(float DeltaTime)
                 if (!Collect->IsInventoryFull())
                 {
                     Memory->MarkHouseVisited(ClosestHouse);
+                    bSeekingHouse = false;
+                    CurrentPath.Empty();
+                    CurrentPathIndex = 0;
+                    bHasTarget = false;
                 }
-                bSeekingHouse = false;
-                CurrentPath.Empty();
-                CurrentPathIndex = 0;
-                bHasTarget = false;
             }
             else if (!bInside && !bVisited && !bSeekingHouse && !Collect->IsInventoryFull())
             {
