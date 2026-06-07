@@ -9,19 +9,19 @@
 #include "Perception/AISenseConfig_Damage.h"
 #include "Perception/AISense_Damage.h"
 
-#include "Public/AgentFSM.h"
-#include "Public/SteeringBehaviors.h"
-#include "Public/AgentController.h"
+#include "Public/AgentFSMRadevaDimana.h"
+#include "Public/SteeringBehaviorsRadevaDimana.h"
+#include "Public/AgentControllerRadevaDimana.h"
 
-#include "StudentPerceptor.generated.h"
+#include "StudentPerceptorRadevaDimana.generated.h"
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class RADEVADIMANAZOMBIERUNTIME_API UStudentPerceptor : public UActorComponent
+class RADEVADIMANAZOMBIERUNTIME_API UStudentPerceptorRadevaDimana : public UActorComponent
 {
 	GENERATED_BODY()
 public:
 	// Sets default values for this component's properties
-	UStudentPerceptor();
+	UStudentPerceptorRadevaDimana();
 	
 	virtual void BeginPlay() override;
 
@@ -32,6 +32,6 @@ public:
 
 private:
 	Seek SeekBehavior;
-	AgentController AgentController;
+	AgentControllerRadevaDimana AgentController;
 	void DrawVisionCone(ASurvivorPawn* Pawn);
 };

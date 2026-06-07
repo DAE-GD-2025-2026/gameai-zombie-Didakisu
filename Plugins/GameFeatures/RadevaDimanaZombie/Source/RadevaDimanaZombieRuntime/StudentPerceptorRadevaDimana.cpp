@@ -1,5 +1,5 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
-#include "StudentPerceptor.h"
+#include "StudentPerceptorRadevaDimana.h"
 #include "Zombies/BaseZombie.h"
 #include "SurvivorAIController.h"
 #include "Survivor/SurvivorPawn.h"
@@ -8,25 +8,27 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "PurgeZones/PurgeZone.h"
 
-UStudentPerceptor::UStudentPerceptor()
+UStudentPerceptorRadevaDimana::UStudentPerceptorRadevaDimana()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UStudentPerceptor::BeginPlay()
+void UStudentPerceptorRadevaDimana::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Green, TEXT("BeginPlay called!"));
 	
 	ASurvivorPawn* Pawn = Cast<ASurvivorPawn>(GetOwner());
 	AgentController.Initialize(Pawn);
 
 	if (auto PerceptionComp = GetOwner()->GetComponentByClass<UAIPerceptionComponent>())
 	{
-		PerceptionComp->OnTargetPerceptionUpdated.AddDynamic(this, &UStudentPerceptor::OnPerceptionUpdated);
+		PerceptionComp->OnTargetPerceptionUpdated.AddDynamic(this, &UStudentPerceptorRadevaDimana::OnPerceptionUpdated);
 	}
 }
 
-void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
+void UStudentPerceptorRadevaDimana::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
 	float CurrentTime = GetWorld()->GetTimeSeconds();
 
@@ -69,7 +71,7 @@ void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 	}
 }
 
-void UStudentPerceptor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UStudentPerceptorRadevaDimana::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -84,7 +86,7 @@ void UStudentPerceptor::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	AgentController.Update(DeltaTime);
 }
 
-void UStudentPerceptor::DrawVisionCone(ASurvivorPawn* Pawn)
+void UStudentPerceptorRadevaDimana::DrawVisionCone(ASurvivorPawn* Pawn)
 {
 	UAIPerceptionComponent* PerceptionComp = Pawn->GetComponentByClass<UAIPerceptionComponent>();
 	if (!PerceptionComp) return;

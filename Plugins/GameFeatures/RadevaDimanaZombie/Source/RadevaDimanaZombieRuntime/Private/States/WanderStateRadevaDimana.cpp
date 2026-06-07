@@ -1,18 +1,18 @@
-#include "States/WanderState.h"
+#include "States/WanderStateRadevaDimana.h"
 #include "Survivor/SurvivorPawn.h"
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
 #include "Village/House/House.h"
 #include "Common/InventoryComponent.h"
 
-WanderState::WanderState(ASurvivorPawn* InPawn, AgentMemory* InMemory, CollectState* InCollect)
+WanderStateRadevaDimana::WanderStateRadevaDimana(ASurvivorPawn* InPawn, AgentMemoryRadevaDimana* InMemory, CollectStateRadevaDimana* InCollect)
 {
 	Pawn = InPawn;
 	Memory = InMemory;
     Collect = InCollect;
 }
 
-void WanderState::OnEnter()
+void WanderStateRadevaDimana::OnEnter()
 {
     if (Pawn)
     {
@@ -26,7 +26,7 @@ void WanderState::OnEnter()
     }
 }
 
-void WanderState::OnExit()
+void WanderStateRadevaDimana::OnExit()
 {
 	if (Pawn)
 	{
@@ -38,7 +38,7 @@ void WanderState::OnExit()
 	}
 }
 
-bool WanderState::IsInsideHouse(AActor* House) const
+bool WanderStateRadevaDimana::IsInsideHouse(AActor* House) const
 {
     if (!House)
     {
@@ -58,18 +58,18 @@ bool WanderState::IsInsideHouse(AActor* House) const
            PawnLoc.Y >= Bounds.Origin.Y - Bounds.Extent.Y && PawnLoc.Y <= Bounds.Origin.Y + Bounds.Extent.Y;
 }
 
-FVector WanderState::GetCurrentSpiralPoint() const
+FVector WanderStateRadevaDimana::GetCurrentSpiralPoint() const
 {
     return SpawnLocation + FVector(FMath::Cos(FMath::DegreesToRadians(ExplorationAngle)) * ExplorationRadius, FMath::Sin(FMath::DegreesToRadians(ExplorationAngle)) * ExplorationRadius, 0.f);
 }
 
-void WanderState::AdvanceSpiral()
+void WanderStateRadevaDimana::AdvanceSpiral()
 {
     ExplorationAngle += 45.f;
     ExplorationRadius = FMath::Min(ExplorationRadius + ExplorationRadiusStep, MaxExplorationRadius);
 }
 
-void WanderState::BuildPathTo(FVector Target)
+void WanderStateRadevaDimana::BuildPathTo(FVector Target)
 {
     NavTarget = Target;
     bHasTarget = true;
@@ -85,7 +85,7 @@ void WanderState::BuildPathTo(FVector Target)
     }
 }
 
-void WanderState::PickNewNavMeshTarget()
+void WanderStateRadevaDimana::PickNewNavMeshTarget()
 {
     UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(Pawn->GetWorld());
     if (!NavSystem)
@@ -144,7 +144,7 @@ void WanderState::PickNewNavMeshTarget()
     }
 }
 
-void WanderState::Update(float DeltaTime)
+void WanderStateRadevaDimana::Update(float DeltaTime)
 {
     if (!Pawn)
     {

@@ -1,15 +1,15 @@
 #pragma once
-#include "../AgentFSM.h"
-#include "../AgentMemory.h"
-#include "SteeringBehaviors.h"
+#include "../AgentFSMRadevaDimana.h"
+#include "../AgentMemoryRadevaDimana.h"
+#include "SteeringBehaviorsRadevaDimana.h"
 #include "Items/BaseItem.h"
 
 class ASurvivorPawn;
 
-class FightBackState : public State
+class FightBackStateRadevaDimana : public State
 {
 public:
-	FightBackState(ASurvivorPawn* InPawn, AgentMemory* InMemory);
+	FightBackStateRadevaDimana(ASurvivorPawn* InPawn, AgentMemoryRadevaDimana* InMemory);
 	void OnEnter() override;
 	void OnExit() override;
 	void Update(float DeltaTime) override;
@@ -22,7 +22,7 @@ private:
 	int FindItemOfType(UInventoryComponent* Inventory, EItemType Type);
 
 	ASurvivorPawn* Pawn = nullptr;
-	AgentMemory* Memory = nullptr;
+	AgentMemoryRadevaDimana* Memory = nullptr;
 
 	float SpinSpeed = 180.f;
 

@@ -1,18 +1,18 @@
 #pragma once
-#include "../AgentFSM.h"
-#include "../AgentMemory.h"
-#include "SteeringBehaviors.h"
+#include "../AgentFSMRadevaDimana.h"
+#include "../AgentMemoryRadevaDimana.h"
+#include "SteeringBehaviorsRadevaDimana.h"
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
-#include "States/CollectState.h"
+#include "States/CollectStateRadevaDimana.h"
 
 class ASurvivorPawn;
-class WanderState;
+class WanderStateRadevaDimana;
 
-class FleeState : public State
+class FleeStateRadevaDimana : public State
 {
 public:
-    FleeState(ASurvivorPawn* InPawn, AgentMemory* InMemory, WanderState* InWander, CollectState* InCollect);
+    FleeStateRadevaDimana(ASurvivorPawn* InPawn, AgentMemoryRadevaDimana* InMemory, WanderStateRadevaDimana* InWander, CollectStateRadevaDimana* InCollect);
     void OnEnter() override;
     void OnExit() override;
     void Update(float DeltaTime) override;
@@ -23,9 +23,9 @@ private:
     void FollowPath();
 
     ASurvivorPawn* Pawn = nullptr;
-    AgentMemory* Memory = nullptr;
-    WanderState* Wander = nullptr;
-    CollectState* Collect = nullptr;
+    AgentMemoryRadevaDimana* Memory = nullptr;
+    WanderStateRadevaDimana* Wander = nullptr;
+    CollectStateRadevaDimana* Collect = nullptr;
 
     FVector NavTarget;
     TArray<FVector> CurrentPath;

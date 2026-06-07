@@ -1,34 +1,34 @@
-#include "States/CollectState.h"
+#include "States/CollectStateRadevaDimana.h"
 #include "Survivor/SurvivorPawn.h"
 #include "Common/InventoryComponent.h"
 
-CollectState::CollectState(ASurvivorPawn* InPawn, AgentMemory* InMemory)
+CollectStateRadevaDimana::CollectStateRadevaDimana(ASurvivorPawn* InPawn, AgentMemoryRadevaDimana* InMemory)
 {
 	Pawn = InPawn;
 	Memory = InMemory;
 }
 
-void CollectState::OnEnter()
+void CollectStateRadevaDimana::OnEnter()
 {
 	bInventoryFull = false;
 	UpdateToTarget();
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, TEXT("Entering Collect State"));
 }
 
-void CollectState::OnExit()
+void CollectStateRadevaDimana::OnExit()
 {
 	TargetItem = nullptr;
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Magenta, TEXT("Exiting Collect State"));
 }
 
-void CollectState::Update(float DeltaTime)
+void CollectStateRadevaDimana::Update(float DeltaTime)
 {
 	UpdateToTarget();
 	MoveToTarget();
 	TryPickUp();
 }
 
-void CollectState::UpdateToTarget()
+void CollectStateRadevaDimana::UpdateToTarget()
 {
 	UInventoryComponent* Inventory = Pawn->GetComponentByClass<UInventoryComponent>();
 	bool bHasWeapon = false;
@@ -86,7 +86,7 @@ void CollectState::UpdateToTarget()
 	}
 }
 
-void CollectState::MoveToTarget()
+void CollectStateRadevaDimana::MoveToTarget()
 {
 	if (!Pawn || !TargetItem || !IsValid(TargetItem))
 	{
@@ -97,7 +97,7 @@ void CollectState::MoveToTarget()
 	Pawn->AddMovementInput(Direction, 0.5f);
 }
 
-void CollectState::TryPickUp()
+void CollectStateRadevaDimana::TryPickUp()
 {
 	if (!Pawn || !TargetItem || !IsValid(TargetItem))
 	{

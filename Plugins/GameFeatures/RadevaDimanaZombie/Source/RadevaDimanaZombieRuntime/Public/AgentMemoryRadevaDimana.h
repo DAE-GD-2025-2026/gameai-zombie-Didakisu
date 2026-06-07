@@ -12,10 +12,10 @@ struct FPerceivedTarget
 	float LastSeenTime;
 };
 
-class AgentMemory
+class AgentMemoryRadevaDimana
 {
 public: 
-	AgentMemory();
+	AgentMemoryRadevaDimana();
 	void Update(float DeltaTime);
 
 	void RegisterZombie(AActor* Actor, FVector Location);

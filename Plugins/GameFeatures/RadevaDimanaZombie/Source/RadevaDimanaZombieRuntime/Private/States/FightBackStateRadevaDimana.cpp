@@ -1,26 +1,26 @@
-#include "States/FightBackState.h"
+#include "States/FightBackStateRadevaDimana.h"
 #include "Common/InventoryComponent.h"
 #include "Items/BaseItem.h"
 #include "Items/ItemType.h" 
 #include "Zombies/BaseZombie.h" 
 
-FightBackState::FightBackState(ASurvivorPawn* InPawn, AgentMemory* InMemory)
+FightBackStateRadevaDimana::FightBackStateRadevaDimana(ASurvivorPawn* InPawn, AgentMemoryRadevaDimana* InMemory)
 {
     Pawn = InPawn;
     Memory = InMemory;
 }
 
-void FightBackState::OnEnter()
+void FightBackStateRadevaDimana::OnEnter()
 {
     GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Entering FightBack State"));
 }
 
-void FightBackState::OnExit()
+void FightBackStateRadevaDimana::OnExit()
 {
     GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Exiting FightBack State"));
 }
 
-void FightBackState::Update(float DeltaTime)
+void FightBackStateRadevaDimana::Update(float DeltaTime)
 {
     FireCooldown -= DeltaTime;
 
@@ -39,7 +39,7 @@ void FightBackState::Update(float DeltaTime)
     }
 }
 
-bool FightBackState::HasWeapon() const
+bool FightBackStateRadevaDimana::HasWeapon() const
 {
     UInventoryComponent* Inventory = Pawn->GetComponentByClass<UInventoryComponent>();
     const TArray<ABaseItem*>& Items = Inventory->GetInventory();
@@ -54,7 +54,7 @@ bool FightBackState::HasWeapon() const
     return false;
 }
 
-void FightBackState::FaceTarget(float DeltaTime)
+void FightBackStateRadevaDimana::FaceTarget(float DeltaTime)
 {
     FVector ZombieLocation = Memory->GetClosestZombieLocation(Pawn->GetActorLocation());
     FVector Direction = ZombieLocation - Pawn->GetActorLocation();
@@ -65,7 +65,7 @@ void FightBackState::FaceTarget(float DeltaTime)
     Pawn->SetActorRotation(TargetRotation);
 }
 
-int FightBackState::FindItemOfType(UInventoryComponent* Inventory, EItemType Type)
+int FightBackStateRadevaDimana::FindItemOfType(UInventoryComponent* Inventory, EItemType Type)
 {
     const TArray<ABaseItem*>& Items = Inventory->GetInventory();
 
@@ -79,7 +79,7 @@ int FightBackState::FindItemOfType(UInventoryComponent* Inventory, EItemType Typ
     return -1;
 }
 
-void FightBackState::Shoot()
+void FightBackStateRadevaDimana::Shoot()
 {
     DrawDebugLine(Pawn->GetWorld(),  Pawn->GetActorLocation(), Pawn->GetActorLocation() + Pawn->GetActorForwardVector() * 1000.f, FColor::Red, false, 2.f, 0, 3.f);
 
@@ -112,7 +112,7 @@ void FightBackState::Shoot()
     }
 }
 
-void FightBackState::Spin(float DeltaTime)
+void FightBackStateRadevaDimana::Spin(float DeltaTime)
 {
     FRotator CurrentRotation = Pawn->GetActorRotation();
     CurrentRotation.Yaw += SpinSpeed * DeltaTime;

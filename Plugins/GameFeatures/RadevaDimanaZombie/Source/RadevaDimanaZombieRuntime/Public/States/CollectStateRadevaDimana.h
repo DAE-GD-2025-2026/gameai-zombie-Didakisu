@@ -1,16 +1,16 @@
 #pragma once
-#include "../AgentFSM.h"
-#include "../AgentMemory.h"
-#include "SteeringBehaviors.h"
+#include "../AgentFSMRadevaDimana.h"
+#include "../AgentMemoryRadevaDimana.h"
+#include "SteeringBehaviorsRadevaDimana.h"
 #include "Items/BaseItem.h"
 
 class ASurvivorPawn;
 //class Seek;
 
-class CollectState : public State
+class CollectStateRadevaDimana : public State
 {
 public:
-	CollectState(ASurvivorPawn* InPawn, AgentMemory* InMemory);
+	CollectStateRadevaDimana(ASurvivorPawn* InPawn, AgentMemoryRadevaDimana* InMemory);
 	void OnEnter() override;
 	void OnExit() override;
 	void Update(float DeltaTime) override;
@@ -23,7 +23,7 @@ private:
 	void TryPickUp();
 
 	ASurvivorPawn* Pawn = nullptr;
-	AgentMemory* Memory = nullptr;
+	AgentMemoryRadevaDimana* Memory = nullptr;
 	ABaseItem* TargetItem = nullptr;
 
 	Seek SeekBehavior;

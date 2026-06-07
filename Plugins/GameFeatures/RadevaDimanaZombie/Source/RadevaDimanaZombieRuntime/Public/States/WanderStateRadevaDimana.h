@@ -1,15 +1,15 @@
 #pragma once
-#include "../AgentFSM.h"
-#include "../AgentMemory.h"
-#include "SteeringBehaviors.h"
-#include "States/CollectState.h"
+#include "../AgentFSMRadevaDimana.h"
+#include "../AgentMemoryRadevaDimana.h"
+#include "SteeringBehaviorsRadevaDimana.h"
+#include "States/CollectStateRadevaDimana.h"
 
 class ASurvivorPawn;
 
-class WanderState : public State
+class WanderStateRadevaDimana : public State
 {
 public:
-	WanderState(ASurvivorPawn* InPawn, AgentMemory* InMemory, CollectState* InCollect);
+	WanderStateRadevaDimana(ASurvivorPawn* InPawn, AgentMemoryRadevaDimana* InMemory, CollectStateRadevaDimana* InCollect);
 	void OnEnter() override;
 	void OnExit() override;
 	void Update(float DeltaTime) override;
@@ -23,7 +23,7 @@ private:
 	void BuildPathTo(FVector Target);
 
 	ASurvivorPawn* Pawn = nullptr;
-	AgentMemory* Memory = nullptr;
+	AgentMemoryRadevaDimana* Memory = nullptr;
 
 	FVector NavTarget = FVector::ZeroVector;
 	bool bHasTarget = false;
@@ -44,6 +44,6 @@ private:
 	FVector SpawnLocation;
 	bool bSpawnLocationSet = false;
 
-	CollectState* Collect = nullptr;
+	CollectStateRadevaDimana* Collect = nullptr;
 	bool bJustEnteredHouse = false;
 };

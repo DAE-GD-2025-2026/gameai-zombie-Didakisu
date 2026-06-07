@@ -1,16 +1,16 @@
-#include "AgentController.h"
+#include "AgentControllerRadevaDimana.h"
 #include "Survivor/SurvivorPawn.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/SpectatorPawn.h"
 #include "Items/BaseItem.h"
 #include "Common/InventoryComponent.h"
 
-AgentController::AgentController()
+AgentControllerRadevaDimana::AgentControllerRadevaDimana()
 {
 
 }
 
-void AgentController::Initialize(ASurvivorPawn* InPawn)
+void AgentControllerRadevaDimana::Initialize(ASurvivorPawn* InPawn)
 {
 	Pawn = InPawn;
 
@@ -20,10 +20,10 @@ void AgentController::Initialize(ASurvivorPawn* InPawn)
 		Movement->MaxSpeed = 750.f;
 	}
 
-	auto CollectStatePtr = std::make_unique<CollectState>(Pawn, &Memory);
-	auto WanderStatePtr = std::make_unique<WanderState>(Pawn, &Memory , CollectStatePtr.get());
-	auto FleeStatePtr = std::make_unique<FleeState>(Pawn, &Memory, WanderStatePtr.get(), CollectStatePtr.get());
-	auto FightBackStatePtr = std::make_unique<FightBackState>(Pawn, &Memory);
+	auto CollectStatePtr = std::make_unique<CollectStateRadevaDimana>(Pawn, &Memory);
+	auto WanderStatePtr = std::make_unique<WanderStateRadevaDimana>(Pawn, &Memory , CollectStatePtr.get());
+	auto FleeStatePtr = std::make_unique<FleeStateRadevaDimana>(Pawn, &Memory, WanderStatePtr.get(), CollectStatePtr.get());
+	auto FightBackStatePtr = std::make_unique<FightBackStateRadevaDimana>(Pawn, &Memory);
 
 	Flee = FleeStatePtr.get();
 	Wander = WanderStatePtr.get();
@@ -112,7 +112,7 @@ void AgentController::Initialize(ASurvivorPawn* InPawn)
 	StateMachine.SetInitialState(Wander);
 }
 
-void AgentController::Update(float DeltaTime)
+void AgentControllerRadevaDimana::Update(float DeltaTime)
 {
 	if (!Pawn)
 	{
@@ -176,7 +176,7 @@ void AgentController::Update(float DeltaTime)
 			Memory.GetVisitedHousesCount()));
 }
 
-int AgentController::FindItemOfType(UInventoryComponent* Inventory, EItemType Type)
+int AgentControllerRadevaDimana::FindItemOfType(UInventoryComponent* Inventory, EItemType Type)
 {
 	const TArray<ABaseItem*>& Items = Inventory->GetInventory();
 
@@ -191,7 +191,7 @@ int AgentController::FindItemOfType(UInventoryComponent* Inventory, EItemType Ty
 	return -1;
 }
 
-void AgentController::HandleItemUsage()
+void AgentControllerRadevaDimana::HandleItemUsage()
 {
 	UInventoryComponent* Inventory = Pawn->GetComponentByClass<UInventoryComponent>();
 	UHealthComponent* Health = Pawn->GetComponentByClass<UHealthComponent>();

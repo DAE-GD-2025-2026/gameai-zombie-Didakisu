@@ -1,12 +1,12 @@
-#include "AgentMemory.h"
+#include "AgentMemoryRadevaDimana.h"
 #include "Village/House/House.h"
 
-AgentMemory::AgentMemory()
+AgentMemoryRadevaDimana::AgentMemoryRadevaDimana()
 {
 
 }
 
-void AgentMemory::Update(float DeltaTime)
+void AgentMemoryRadevaDimana::Update(float DeltaTime)
 {
 	ElapsedTime += DeltaTime;
 
@@ -31,7 +31,7 @@ void AgentMemory::Update(float DeltaTime)
 	});
 }
 
-void AgentMemory::RegisterZombie(AActor* Actor, FVector Location)
+void AgentMemoryRadevaDimana::RegisterZombie(AActor* Actor, FVector Location)
 {
 	if (!Actor)
 	{
@@ -58,7 +58,7 @@ void AgentMemory::RegisterZombie(AActor* Actor, FVector Location)
 }
 
 
-void AgentMemory::RegisterItem(AActor* Actor, FVector Location, FVector AgentLocation)
+void AgentMemoryRadevaDimana::RegisterItem(AActor* Actor, FVector Location, FVector AgentLocation)
 {
 	if (!Actor || Actor->IsHidden())
 	{
@@ -89,7 +89,7 @@ void AgentMemory::RegisterItem(AActor* Actor, FVector Location, FVector AgentLoc
 	Items.Add(NewEntry);
 }
 
-void AgentMemory::RegisterHouse(AActor * Actor, FVector Location)
+void AgentMemoryRadevaDimana::RegisterHouse(AActor * Actor, FVector Location)
 {
 	if (!Actor)
 	{
@@ -113,7 +113,7 @@ void AgentMemory::RegisterHouse(AActor * Actor, FVector Location)
 	Houses.Add(NewEntry);
 }
 
-void AgentMemory::RegisterPurgeZone(AActor* Actor, FVector Location)
+void AgentMemoryRadevaDimana::RegisterPurgeZone(AActor* Actor, FVector Location)
 {
 	if (!Actor)
 	{
@@ -138,7 +138,7 @@ void AgentMemory::RegisterPurgeZone(AActor* Actor, FVector Location)
 	PurgeZones.Add(NewEntry);
 }
 
-void AgentMemory::UnregisterZombie(AActor* Actor)
+void AgentMemoryRadevaDimana::UnregisterZombie(AActor* Actor)
 {
 	if (!Actor)
 	{
@@ -155,7 +155,7 @@ void AgentMemory::UnregisterZombie(AActor* Actor)
 	}
 }
 
-void AgentMemory::UnregisterItem(ABaseItem* Item)
+void AgentMemoryRadevaDimana::UnregisterItem(ABaseItem* Item)
 {
 	if (!Item)
 	{
@@ -172,27 +172,27 @@ void AgentMemory::UnregisterItem(ABaseItem* Item)
 	}
 }
 
-const TArray<FPerceivedTarget>& AgentMemory::GetZombies() const
+const TArray<FPerceivedTarget>& AgentMemoryRadevaDimana::GetZombies() const
 {
 	return Zombies;
 }
 
-const TArray<FPerceivedTarget>& AgentMemory::GetItems() const
+const TArray<FPerceivedTarget>& AgentMemoryRadevaDimana::GetItems() const
 {
 	return Items;
 }
 
-const TArray<FPerceivedTarget>& AgentMemory::GetHouses() const
+const TArray<FPerceivedTarget>& AgentMemoryRadevaDimana::GetHouses() const
 {
 	return Houses;
 }
 
-const TArray<FPerceivedTarget>& AgentMemory::GetPurgeZones() const
+const TArray<FPerceivedTarget>& AgentMemoryRadevaDimana::GetPurgeZones() const
 {
 	return PurgeZones;
 }
 
-FVector AgentMemory::GetClosestZombieLocation(const FVector& FromLocation) const
+FVector AgentMemoryRadevaDimana::GetClosestZombieLocation(const FVector& FromLocation) const
 {
 	if (Zombies.Num() == 0)
 	{
@@ -216,7 +216,7 @@ FVector AgentMemory::GetClosestZombieLocation(const FVector& FromLocation) const
 	return Zombies[ClosestZombieIndex].Location;
 }
 
-AActor* AgentMemory::GetClosestHouse(const FVector& FromLocation, bool bUnvisitedOnly) const
+AActor* AgentMemoryRadevaDimana::GetClosestHouse(const FVector& FromLocation, bool bUnvisitedOnly) const
 {
 	if (Houses.Num() == 0)
 	{
@@ -261,7 +261,7 @@ AActor* AgentMemory::GetClosestHouse(const FVector& FromLocation, bool bUnvisite
 	return ClosestActor;
 }
 
-ABaseItem* AgentMemory::GetClosestItem(const FVector& FromLocation) const
+ABaseItem* AgentMemoryRadevaDimana::GetClosestItem(const FVector& FromLocation) const
 {
 	if (Items.Num() == 0)
 	{
@@ -291,7 +291,7 @@ ABaseItem* AgentMemory::GetClosestItem(const FVector& FromLocation) const
 	return Item;
 }
 
-ABaseItem* AgentMemory::GetClosestItemOfType(const FVector& FromLocation, EItemType Type) const
+ABaseItem* AgentMemoryRadevaDimana::GetClosestItemOfType(const FVector& FromLocation, EItemType Type) const
 {
 	int ClosestIndex = -1;
 	float ClosestDistanceSquared = TNumericLimits<float>::Max();
@@ -320,7 +320,7 @@ ABaseItem* AgentMemory::GetClosestItemOfType(const FVector& FromLocation, EItemT
 	return Cast<ABaseItem>(Items[ClosestIndex].Actor);
 }
 
-void AgentMemory::MarkHouseVisited(AActor* House)
+void AgentMemoryRadevaDimana::MarkHouseVisited(AActor* House)
 {
 	if (!House)
 	{
@@ -330,7 +330,7 @@ void AgentMemory::MarkHouseVisited(AActor* House)
 	VisitedHouses.AddUnique(House);
 }
 
-bool AgentMemory::IsHouseVisited(AActor* House) const
+bool AgentMemoryRadevaDimana::IsHouseVisited(AActor* House) const
 {
 	return VisitedHouses.Contains(House);
 }

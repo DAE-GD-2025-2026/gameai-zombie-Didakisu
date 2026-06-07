@@ -1,11 +1,11 @@
-#include "States/FleeState.h"
+#include "States/FleeStateRadevaDimana.h"
 #include "Survivor/SurvivorPawn.h"
-#include "SteeringBehaviors.h"
+#include "SteeringBehaviorsRadevaDimana.h"
 #include "Village/House/House.h"
 #include "Common/InventoryComponent.h"
-#include "States/WanderState.h"
+#include "States/WanderStateRadevaDimana.h"
 
-FleeState::FleeState(ASurvivorPawn* InPawn, AgentMemory* InMemory, WanderState* InWander, CollectState* InCollect)
+FleeStateRadevaDimana::FleeStateRadevaDimana(ASurvivorPawn* InPawn, AgentMemoryRadevaDimana* InMemory, WanderStateRadevaDimana* InWander, CollectStateRadevaDimana* InCollect)
 {
     Pawn = InPawn;
     Memory = InMemory;
@@ -13,7 +13,7 @@ FleeState::FleeState(ASurvivorPawn* InPawn, AgentMemory* InMemory, WanderState* 
     Collect = InCollect;
 }
 
-void FleeState::OnEnter()
+void FleeStateRadevaDimana::OnEnter()
 {
     bHasTarget = false;
     CurrentPath.Empty();
@@ -21,7 +21,7 @@ void FleeState::OnEnter()
     GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("Entering Flee State"));
 }
 
-void FleeState::OnExit()
+void FleeStateRadevaDimana::OnExit()
 {
     bHasTarget = false;
     CurrentPath.Empty();
@@ -29,7 +29,7 @@ void FleeState::OnExit()
     GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Exiting Flee State"));
 }
 
-void FleeState::BuildPathTo(FVector Target)
+void FleeStateRadevaDimana::BuildPathTo(FVector Target)
 {
     NavTarget = Target;
     bHasTarget = true;
@@ -44,7 +44,7 @@ void FleeState::BuildPathTo(FVector Target)
     }
 }
 
-void FleeState::PickFleeTarget()
+void FleeStateRadevaDimana::PickFleeTarget()
 {
     UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(Pawn->GetWorld());
     if (!NavSystem)
@@ -108,7 +108,7 @@ void FleeState::PickFleeTarget()
     }
 }
 
-bool FleeState::IsInsideHouse(AActor* House) const
+bool FleeStateRadevaDimana::IsInsideHouse(AActor* House) const
 {
     if (!House)
     {
@@ -128,7 +128,7 @@ bool FleeState::IsInsideHouse(AActor* House) const
            PawnLoc.Y >= Bounds.Origin.Y - Bounds.Extent.Y && PawnLoc.Y <= Bounds.Origin.Y + Bounds.Extent.Y;
 }
 
-void FleeState::FollowPath()
+void FleeStateRadevaDimana::FollowPath()
 {
     if (CurrentPathIndex < CurrentPath.Num() - 1)
     {
@@ -154,7 +154,7 @@ void FleeState::FollowPath()
     }
 }
 
-void FleeState::Update(float DeltaTime)
+void FleeStateRadevaDimana::Update(float DeltaTime)
 {
     if (!Pawn || !Memory)
     {
